@@ -9,6 +9,7 @@ import LiveCanvas from '@/components/LiveCanvas';
 import CyclingText from '@/components/CyclingText';
 import LiveDemoModal from '@/components/LiveDemoModal';
 import ArchitectureDrawer from '@/components/ArchitectureDrawer';
+import NetworkLatencySimulator from '@/components/NetworkLatencySimulator';
 import { 
   ShieldCheck, 
   Terminal, 
@@ -194,7 +195,6 @@ export default function Home() {
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <div className="md:col-span-2 p-8 rounded-2xl border border-slate-800 bg-slate-900/50 backdrop-blur-md relative overflow-hidden group hover:border-slate-700 transition">
-              <div className="absolute inset-0 animate-shimmer pointer-events-none opacity-40" />
               <h2 className="text-xl font-bold text-slate-100 mb-4">
                 Enterprise Reliability Meets Edge Speed
               </h2>
@@ -281,17 +281,8 @@ export default function Home() {
                   and live execution telemetry across upstream LLM providers.
                 </p>
 
-                <div className="mt-5 p-3.5 rounded-xl bg-slate-950/80 border border-slate-800/80 font-mono text-xs space-y-1.5 text-slate-300">
-                  <div className="flex items-center gap-2 text-[11px] text-teal-300">
-                    <span>⚡ Sub-4ms edge routing overhead</span>
-                  </div>
-                  <div className="flex items-center gap-2 text-[11px] text-slate-400">
-                    <span>🛡️ Sliding-window token governor (TPM/RPM)</span>
-                  </div>
-                  <div className="flex items-center gap-2 text-[11px] text-slate-400">
-                    <span>🔒 Zero-retention privacy auditing</span>
-                  </div>
-                </div>
+                {/* Real-time Latency & Topology Inspector */}
+                <NetworkLatencySimulator />
               </div>
 
               <div className="mt-6 flex flex-wrap gap-1.5">
