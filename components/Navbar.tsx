@@ -1,8 +1,9 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Terminal, FileDown, Mail } from 'lucide-react';
+import { Terminal, FileDown } from 'lucide-react';
 import ContactModal from './ContactModal';
+import TerminalModal from './TerminalModal';
 
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
@@ -18,7 +19,7 @@ export default function Navbar() {
   return (
     <header className="fixed top-0 left-0 right-0 z-50 flex justify-center p-4">
       <nav
-        className={`flex items-center gap-2 sm:gap-6 px-4 py-2.5 rounded-full border transition-all duration-300 backdrop-blur-md ${
+        className={`flex items-center gap-2 sm:gap-4 px-4 py-2.5 rounded-full border transition-all duration-300 backdrop-blur-md ${
           scrolled
             ? 'bg-slate-950/80 border-slate-700/60 shadow-2xl shadow-teal-500/10'
             : 'bg-slate-900/50 border-slate-800/80'
@@ -49,6 +50,7 @@ export default function Navbar() {
         <div className="h-4 w-[1px] bg-slate-800 hidden sm:block" />
 
         <div className="flex items-center gap-2">
+          <TerminalModal />
           <a
             href="/ShantanuDey_Resume.pdf"
             download
