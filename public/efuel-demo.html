@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0"/>
+  <title>E-Fuel — Emergency Fuel Delivery</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.2/babel.min.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=Inter:wght@400;500;600&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --bg:#080C18; --surface:#0E1525; --elevated:#152034;
+      --border:#1E304A; --border-hi:#2A4468;
+      --amber:#F5A623; --amber-dim:#F5A62322; --amber-mid:#F5A62344;
+      --green:#22D07A; --green-dim:#22D07A22;
+      --indigo:#7B8FFF;
+      --text:#E8F4FF; --text-mid:#8BA5C8; --text-dim:#4A6FA5;
+    }
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body { font-family:'Inter', sans-serif; background:var(--bg); color:var(--text); padding:20px; }
+    .card { background:var(--surface); border:1.5px solid var(--border); border-radius:16px; padding:20px; max-width:480px; margin:0 auto; }
+    .title { font-family:'Syne', sans-serif; font-size:22px; font-weight:800; color:var(--amber); display:flex; align-items:center; gap:8px; margin-bottom:12px; }
+    .desc { font-size:13px; color:var(--text-mid); line-height:1.6; margin-bottom:20px; }
+    .badge { display:inline-block; font-family:'Space Mono', monospace; font-size:11px; padding:4px 10px; border-radius:100px; background:var(--amber-dim); color:var(--amber); border:1px solid var(--amber-mid); margin-bottom:12px; }
+    .btn { width:100%; padding:14px; background:var(--amber); color:#080C18; border:none; border-radius:10px; font-family:'Syne', sans-serif; font-weight:800; font-size:14px; cursor:pointer; }
+    .metric { display:flex; justify-content:space-between; font-size:12px; font-family:'Space Mono', monospace; padding:8px 0; border-bottom:1px solid var(--border); color:var(--text-mid); }
+    .metric span:last-child { color:var(--text); font-weight:700; }
+  </style>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/babel">
+function MiniEFuel() {
+  const [status, setStatus] = React.useState('Ready for GPS match');
+  const [dispatched, setDispatched] = React.useState(false);
+
+  const handleDispatch = () => {
+    setStatus('Computing Haversine distance to Park Street station...');
+    setTimeout(() => {
+      setStatus('PESO Safety Handshake Verified. Courier #402 en-route. PIN: 8492');
+      setDispatched(true);
+    }, 1200);
+  };
+
+  return (
+    <div className="card">
+      <div className="badge">LIVE ENGINE PROTOTYPE</div>
+      <div className="title">⛽ E-Fuel Dispatch Sandbox</div>
+      <p className="desc">Simulating real-time highway emergency fuel logistics using Haversine geodesic resolution and PESO safety gates.</p>
+      
+      <div style={{marginBottom:18}}>
+        <div className="metric"><span>Origin Geohash:</span><span>tu14p9 (Kolkata)</span></div>
+        <div className="metric"><span>Haversine Latency:</span><span>0.64 ms</span></div>
+        <div className="metric"><span>Active Safety Gate:</span><span>PESO Act 1934</span></div>
+        <div className="metric"><span>Cloud Topology:</span><span>Azure Serverless</span></div>
+      </div>
+
+      <div style={{padding:'12px', background:'var(--elevated)', borderRadius:'8px', fontSize:'12px', fontFamily:'Space Mono', color:'var(--amber)', marginBottom:'16px'}}>
+        &gt; {status}
+      </div>
+
+      <button className="btn" onClick={handleDispatch} disabled={dispatched}>
+        {dispatched ? 'Dispatch Active (PIN 8492)' : 'Simulate Emergency Dispatch →'}
+      </button>
+    </div>
+  );
+}
+ReactDOM.createRoot(document.getElementById('root')).render(<MiniEFuel/>);
+</script>
+</body>
+</html>
