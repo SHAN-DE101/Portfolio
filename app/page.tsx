@@ -1,15 +1,21 @@
+'use client';
+
+import { useState } from 'react';
 import SpotlightCursor from '@/components/SpotlightCursor';
 import NavMenu from '@/components/NavMenu';
 import LiveDemoModal from '@/components/LiveDemoModal';
 import MotionCard from '@/components/MotionCard';
+import ArchitectureDrawer from '@/components/ArchitectureDrawer';
+import ContactModal from '@/components/ContactModal';
 import { 
-  Mail, 
   FileDown, 
   ExternalLink, 
   ShieldCheck, 
   Zap, 
   Terminal, 
-  Layers
+  Layers,
+  BatteryCharging,
+  Fuel
 } from 'lucide-react';
 
 function GithubIcon({ className = "w-5 h-5" }: { className?: string }) {
@@ -28,7 +34,77 @@ function LinkedinIcon({ className = "w-5 h-5" }: { className?: string }) {
   );
 }
 
+const GATEWAY_SPECS = {
+  title: 'AI Token Gateway Architecture',
+  badge: 'EDGE PROXY SPECIFICATION',
+  tagline: 'Multi-tenant routing with sliding-window quota governance and zero data-at-rest retention.',
+  pipeline: [
+    { step: 'Edge Ingress', desc: 'Routes incoming client payloads to closest edge node (iad1) minimizing round-trip overhead.' },
+    { step: 'Virtual Key Auth', desc: 'Validates synthetic tenant credentials without exposing underlying provider API secrets.' },
+    { step: 'Sliding Window Rate Limiter', desc: 'Calculates instantaneous TPM (Tokens Per Minute) and RPM across a dynamic 60s sliding window.' },
+    { step: 'Budget Check', desc: 'Enforces hard monthly caps ($10,000 baseline) before initiating upstream dispatch.' },
+    { step: 'Zero-Retention Audit', desc: 'Captures latency, token usage, and status metadata while prompt and completion text are discarded from memory.' },
+  ],
+  securityHighlights: [
+    'Virtual key obfuscation isolates tenant clients from upstream OpenAI/Anthropic API keys.',
+    'Cryptographic headers verify edge-to-origin payload authenticity.',
+    'Zero-payload-retention policy prevents PII and LLM hallucinations from leaking into persistent logs.',
+  ],
+  techChoices: [
+    { title: 'Edge Runtime over Containerized Proxies', rationale: 'Sub-4ms routing overhead with instant global distribution and zero cold-start penalties.' },
+    { title: 'In-Memory Sliding Window over Fixed Window', rationale: 'Eliminates edge-boundary traffic bursting and evenly distributes high-concurrency requests.' },
+  ],
+};
+
+const LOGISTICS_SPECS = {
+  efuel: {
+    title: 'E-Fuel: Highway Fuel Logistics',
+    badge: 'PETROLEUM ACT & GEOHASH ENGINE',
+    tagline: 'High-availability emergency replenishment platform with cryptographic and legal compliance gates.',
+    pipeline: [
+      { step: 'Client Haversine Resolution', desc: 'Evaluates geodesic distance and Geohash cells on the client device to query only nearby fuel depots.' },
+      { step: 'PESO Statutory Compliance Gate', desc: 'Enforces Petroleum Act of India verification before unlocking payment workflows.' },
+      { step: 'Serverless Cloud Ingress', desc: 'Azure Static Web App edge invokes stateless Azure Functions with pre-warmed database pools.' },
+      { step: 'Atomic Order Creation', desc: 'Transactions registered in Cosmos DB with partition keys organized by localized geohash regions.' },
+      { step: 'Out-of-Band Delivery Handshake', desc: 'Courier terminal must verify client-held 4-digit PIN before dispensing valve unlocks.' },
+    ],
+    securityHighlights: [
+      'Out-of-band 4-digit physical PIN handshake eliminates spoofing and phantom deliveries.',
+      'Cosmos DB webhook idempotency ledger prevents double-dispatch race conditions.',
+      'Secrets managed through Azure Key Vault with Managed Identities and Zero-Trust networking.',
+    ],
+    techChoices: [
+      { title: 'Client-side Geohash Pre-filtering', rationale: 'Shields backend database from thousands of unnecessary radius query invocations per second.' },
+      { title: 'Azure Serverless Architecture', rationale: 'Guarantees zero idle infrastructure cost during low-demand highway hours while scaling instantaneously.' },
+    ],
+  },
+  echarge: {
+    title: 'E-Charge: Mobile EV Charging Fleet',
+    badge: 'ON-DEMAND EV LOGISTICS',
+    tagline: 'Dynamic mobile charging van dispatch with per-kWh algorithmic billing and cold-start pre-warming.',
+    pipeline: [
+      { step: 'Vehicle Model & Port Resolution', desc: 'Identifies EV model, charging protocol (CCS2, Type 2, GB/T), and target kWh requirement.' },
+      { step: 'Fleet Haversine Sourcing', desc: 'Locates nearest mobile fast-charging van equipped with DC fast-charge batteries.' },
+      { step: 'Shoulder Safety Compliance Gate', desc: 'Mandatory verification that vehicle is safely stationary with accessible charging port.' },
+      { step: 'Single-Tap UPI Intent', desc: 'Calculates dynamic base delivery fee + per-kW pricing dispatched over deep-linked payment.' },
+      { step: 'Cryptographic Power Handshake', desc: '4-digit out-of-band PIN activates charging sequence on delivery van hardware.' },
+    ],
+    securityHighlights: [
+      'Pre-warming critical Azure Functions during SMS OTP phase masks 200-800ms serverless cold starts.',
+      'Cryptographic hardware handshake ensures power delivery only triggers for confirmed motorist.',
+      'Immutable Cosmos DB ledger for real-time auditability across high-voltage power transactions.',
+    ],
+    techChoices: [
+      { title: 'Per-kW Dynamic Metering over Flat Fee', rationale: 'Fair, transparent billing proportional to highway range required to reach next grid station.' },
+      { title: 'Edge Single Page Application (SPA)', rationale: 'Compiles lightweight React bundles to minimize Time-to-First-Byte in weak highway cellular areas.' },
+    ],
+  },
+};
+
 export default function Home() {
+  const [logisticsMode, setLogisticsMode] = useState<'efuel' | 'echarge'>('efuel');
+  const activeLogistics = LOGISTICS_SPECS[logisticsMode];
+
   return (
     <div className="relative bg-[#0b1120] text-slate-300 selection:bg-teal-300 selection:text-slate-900 min-h-screen">
       <SpotlightCursor />
@@ -36,7 +112,7 @@ export default function Home() {
       <div className="mx-auto max-w-screen-xl px-6 py-12 md:px-12 md:py-20 lg:px-24 lg:py-0">
         <div className="lg:flex lg:justify-between lg:gap-12">
 
-          {/* ================= LEFT PANE (Sticky Sidebar) ================= */}
+          {/* ================= LEFT PANE ================= */}
           <header className="lg:sticky lg:top-0 lg:flex lg:max-h-screen lg:w-[45%] lg:flex-col lg:justify-between lg:py-24">
             <div>
               <h1 className="text-4xl font-extrabold tracking-tight text-slate-100 sm:text-5xl">
@@ -54,12 +130,12 @@ export default function Home() {
             </div>
 
             {/* Social & Contact Bar */}
-            <div className="flex items-center gap-5 mt-8 lg:mt-0">
+            <div className="flex flex-wrap items-center gap-4 mt-8 lg:mt-0">
               <a 
                 href="https://github.com/SHAN-DE101" 
                 target="_blank" 
                 rel="noreferrer" 
-                className="text-slate-400 hover:text-teal-300 transition"
+                className="text-slate-400 hover:text-teal-300 transition p-1"
                 aria-label="GitHub Profile"
               >
                 <GithubIcon className="w-5 h-5" />
@@ -68,29 +144,25 @@ export default function Home() {
                 href="https://www.linkedin.com/in/shantanu-dey-7724571b2/" 
                 target="_blank" 
                 rel="noreferrer" 
-                className="text-slate-400 hover:text-teal-300 transition"
+                className="text-slate-400 hover:text-teal-300 transition p-1"
                 aria-label="LinkedIn Profile"
               >
                 <LinkedinIcon className="w-5 h-5" />
               </a>
-              <a 
-                href="mailto:deyshantanu101@gmail.com" 
-                className="text-slate-400 hover:text-teal-300 transition"
-                aria-label="Send Email"
-              >
-                <Mail className="w-5 h-5" />
-              </a>
+
+              <ContactModal />
+
               <a
                 href="/ShantanuDey_Resume.pdf"
                 download
-                className="flex items-center gap-2 text-xs font-mono px-3.5 py-1.5 rounded-full border border-teal-500/30 text-teal-300 hover:bg-teal-500/10 transition"
+                className="flex items-center gap-1.5 text-xs font-mono px-3.5 py-1.5 rounded-full border border-slate-700 text-slate-300 hover:bg-slate-800 transition"
               >
                 <FileDown className="w-3.5 h-3.5" /> Resume
               </a>
             </div>
           </header>
 
-          {/* ================= RIGHT PANE (Scrollable Feed) ================= */}
+          {/* ================= RIGHT PANE ================= */}
           <main className="pt-24 lg:w-[55%] lg:py-24 space-y-24">
 
             {/* ABOUT */}
@@ -117,7 +189,8 @@ export default function Home() {
                   <span className="flex items-center gap-1.5">
                     <Terminal className="w-3.5 h-3.5" /> EDGE REVERSE PROXY
                   </span>
-                  <div className="flex items-center gap-3">
+                  <div className="flex items-center gap-2">
+                    <ArchitectureDrawer data={GATEWAY_SPECS} triggerText="Architecture Sheet" accentColor="teal" />
                     <LiveDemoModal
                       url="https://ai-token-gateway.vercel.app/dashboard"
                       title="AI Token Gateway Console"
@@ -128,7 +201,7 @@ export default function Home() {
                       href="https://ai-token-gateway.vercel.app/dashboard" 
                       target="_blank" 
                       rel="noreferrer"
-                      className="text-slate-400 hover:text-teal-300 transition"
+                      className="text-slate-400 hover:text-teal-300 transition p-1"
                       aria-label="Open AI Token Gateway in new tab"
                     >
                       <ExternalLink className="w-4 h-4" />
@@ -165,53 +238,89 @@ export default function Home() {
                 </div>
               </MotionCard>
 
-              {/* PROJECT 2: E-FUEL */}
+              {/* PROJECT 2: E-FUEL / E-CHARGE LOGISTICS ENGINE */}
               <MotionCard className="rounded-2xl border border-amber-500/20 bg-slate-900/60 p-6 transition-all hover:border-amber-400/40 hover:bg-slate-900/90 shadow-lg">
-                <div className="flex items-center justify-between text-xs font-mono text-amber-400 mb-2">
-                  <span className="flex items-center gap-1.5">
-                    <Layers className="w-3.5 h-3.5" /> LOGISTICS & SPATIAL ENGINE
-                  </span>
-                  <div className="flex items-center gap-3">
-                    <LiveDemoModal
-                      url="/efuel-demo.html"
-                      title="E-Fuel Logistics & Dispatch Simulator"
-                      triggerText="Live Sandbox"
-                      themeColor="amber"
-                    />
-                    <a 
-                      href="/efuel-demo.html" 
-                      target="_blank" 
-                      rel="noreferrer"
-                      className="text-slate-400 hover:text-amber-300 transition"
-                      aria-label="Open E-Fuel in new tab"
+                <div className="flex flex-wrap items-center justify-between gap-2 text-xs font-mono text-amber-400 mb-2">
+                  <div className="flex items-center gap-1.5">
+                    <Layers className="w-3.5 h-3.5" />
+                    <span>ON-DEMAND EMERGENCY LOGISTICS</span>
+                  </div>
+
+                  {/* Mode Switcher */}
+                  <div className="flex items-center bg-slate-950/80 p-0.5 rounded-lg border border-slate-800">
+                    <button
+                      type="button"
+                      onClick={() => setLogisticsMode('efuel')}
+                      className={`flex items-center gap-1 px-2.5 py-1 rounded text-[11px] font-mono transition ${
+                        logisticsMode === 'efuel' ? 'bg-amber-500/20 text-amber-300 border border-amber-500/40' : 'text-slate-400 hover:text-slate-200'
+                      }`}
                     >
-                      <ExternalLink className="w-4 h-4" />
-                    </a>
+                      <Fuel className="w-3 h-3" /> E-Fuel
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setLogisticsMode('echarge')}
+                      className={`flex items-center gap-1 px-2.5 py-1 rounded text-[11px] font-mono transition ${
+                        logisticsMode === 'echarge' ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/40' : 'text-slate-400 hover:text-slate-200'
+                      }`}
+                    >
+                      <BatteryCharging className="w-3 h-3" /> E-Charge (EV)
+                    </button>
                   </div>
                 </div>
 
-                <h3 className="text-xl font-bold text-slate-100">
-                  E-Fuel: On-Demand Highway Fuel Dispatch
-                </h3>
+                <div className="flex items-center justify-between mt-1">
+                  <h3 className="text-xl font-bold text-slate-100">
+                    {logisticsMode === 'efuel' ? 'E-Fuel: On-Demand Highway Fuel Dispatch' : 'E-Charge: Mobile EV Charging Fleet'}
+                  </h3>
+
+                  <div className="flex items-center gap-2">
+                    <ArchitectureDrawer data={activeLogistics} triggerText="Architecture Sheet" accentColor="amber" />
+                    {logisticsMode === 'efuel' ? (
+                      <LiveDemoModal
+                        url="/efuel-demo.html"
+                        title="E-Fuel Logistics & Dispatch Simulator"
+                        triggerText="Live Sandbox"
+                        themeColor="amber"
+                      />
+                    ) : (
+                      <span className="text-[11px] font-mono text-emerald-400 bg-emerald-950/40 px-2 py-0.5 rounded border border-emerald-500/30">
+                        PRD Architecture
+                      </span>
+                    )}
+                  </div>
+                </div>
 
                 <p className="mt-3 text-sm text-slate-300 leading-relaxed">
-                  An emergency fuel replenishment platform resolving highway breakdown gaps through real-time geodesic 
-                  matching, statutory compliance gates, and zero-idle cloud topology.
+                  {logisticsMode === 'efuel'
+                    ? 'An emergency fuel replenishment platform resolving highway breakdown gaps through real-time geodesic matching, statutory compliance gates, and zero-idle cloud topology.'
+                    : 'A serverless EV charging logistics system matching stranded electric vehicles with mobile battery vans using Haversine geodesic routing, kW billing, and cold-start mitigations.'}
                 </p>
 
                 <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs text-slate-400 font-mono">
                   <div className="bg-slate-800/60 p-2.5 rounded-lg border border-slate-700/50">
-                    <span className="text-amber-300 block mb-1">📍 Algorithmic Matching</span>
-                    Client-side Haversine spatial resolution with Geohash clustering to match stations in &lt;1ms.
+                    <span className="text-amber-300 block mb-1">
+                      {logisticsMode === 'efuel' ? '📍 Algorithmic Sourcing' : '⚡ Dynamic EV Metering'}
+                    </span>
+                    {logisticsMode === 'efuel'
+                      ? 'Client-side Haversine spatial resolution with Geohash clustering to match stations in <1ms.'
+                      : 'Per-kW algorithmic pricing + geodesic delivery fee processed via UPI Intent.'}
                   </div>
                   <div className="bg-slate-800/60 p-2.5 rounded-lg border border-slate-700/50">
-                    <span className="text-amber-300 block mb-1">🔐 Out-of-Band Handshake</span>
-                    4-digit PIN verification required on-site; PESO container compliance enforcement.
+                    <span className="text-amber-300 block mb-1">
+                      {logisticsMode === 'efuel' ? '🔐 Compliance Gate' : '🛡️ Zero-Trust Handshake'}
+                    </span>
+                    {logisticsMode === 'efuel'
+                      ? '4-digit PIN verification required on-site; PESO container compliance enforcement.'
+                      : 'Out-of-band PIN unlocks van charging sequence; function pre-warming masks cold starts.'}
                   </div>
                 </div>
 
                 <div className="mt-5 flex flex-wrap gap-2">
-                  {['React 18', 'Azure Functions', 'Cosmos DB NoSQL', 'Haversine Formula', 'PESO Safety', 'UPI Intent'].map(tag => (
+                  {(logisticsMode === 'efuel'
+                    ? ['React 18', 'Azure Functions', 'Cosmos DB NoSQL', 'Haversine Formula', 'PESO Safety', 'UPI Intent']
+                    : ['EV Logistics', 'Azure Static Apps', 'Azure Key Vault', 'Geohash Radius', 'Managed Identity', 'OWASP Defense']
+                  ).map(tag => (
                     <span key={tag} className="px-2.5 py-1 text-xs font-mono text-amber-300 bg-amber-950/50 rounded-full border border-amber-500/20">
                       {tag}
                     </span>
@@ -253,6 +362,7 @@ export default function Home() {
                 Other Engineering Projects
               </h3>
 
+              {/* Payment Gateway */}
               <MotionCard className="rounded-xl border border-slate-800/80 p-5 hover:border-slate-700 hover:bg-slate-800/20 transition">
                 <h4 className="text-base font-semibold text-slate-200">Serverless Payment Gateway Integration</h4>
                 <p className="mt-2 text-sm text-slate-400 leading-normal">
@@ -268,6 +378,7 @@ export default function Home() {
                 </div>
               </MotionCard>
 
+              {/* Object Detection */}
               <MotionCard className="rounded-xl border border-slate-800/80 p-5 hover:border-slate-700 hover:bg-slate-800/20 transition">
                 <h4 className="text-base font-semibold text-slate-200">Real-Time Object Detection (HAAR Cascade)</h4>
                 <p className="mt-2 text-sm text-slate-400 leading-normal">

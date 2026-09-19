@@ -1,36 +1,53 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Shantanu Dey — Developer Portfolio & Systems Architecture
 
-## Getting Started
+[![Next.js](https://img.shields.io/badge/Next.js-15-black?style=flat&logo=next.js)](https://nextjs.org/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.0-blue?style=flat&logo=typescript)](https://www.typescriptlang.org/)
+[![Tailwind CSS](https://img.shields.io/badge/Tailwind-CSS-38B2AC?style=flat&logo=tailwind-css)](https://tailwindcss.com/)
+[![Deployment](https://img.shields.io/badge/Deployed%20on-Vercel-black?style=flat&logo=vercel)](https://portfolio-rouge-eight-48.vercel.app)
 
-First, run the development server:
+> Modern developer portfolio built with a sticky two-pane split layout, cursor spotlight tracking, scroll-linked typography, and interactive architecture drawers for distributed systems.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+**Live URL**: https://portfolio-rouge-eight-48.vercel.app
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+---
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## 🚀 Featured System Architectures
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+### 1. [AI Token Gateway](https://ai-token-gateway.vercel.app/dashboard)
+* **Type:** High-throughput Edge Reverse Proxy
+* **Stack:** TypeScript, Next.js Edge Runtime, Sliding Window Rate Limiter, Tailwind CSS
+* **Highlights:**
+  * Sub-4ms request routing across edge nodes.
+  * Multi-tenant token and request rate limiting across dynamic sliding windows.
+  * Zero-retention privacy posture (only metadata audited; prompt & completion payloads never stored).
 
-## Learn More
+### 2. E-Fuel & E-Charge Emergency Logistics
+* **Type:** Compliant Serverless Logistics & Spatial Resolution Engine
+* **Stack:** React 18, Azure Functions, Cosmos DB NoSQL, Haversine Spatial Formula
+* **Highlights:**
+  * Sub-millisecond geodesic distance calculations using Geohash pre-filtering.
+  * PESO statutory safety compliance gate adhering to the Petroleum Act of India.
+  * Cryptographic out-of-band 4-digit PIN verification handshake prior to fuel/power delivery.
 
-To learn more about Next.js, take a look at the following resources:
+---
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## 🛠️ Tech Stack & Tooling
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+* **Frontend & Edge**: Next.js 15, React 18, TypeScript, Tailwind CSS, Framer Motion
+* **Backend & Cloud**: Java, Spring Boot, Python, Microsoft Azure (Functions, Static Web Apps, Cosmos DB)
+* **Security Tooling**: Wireshark, Metasploit Framework, Nmap, Azure Key Vault, Managed Identities
+* **Certifications**: Microsoft Certified: Azure Fundamentals (AZ-900)
 
-## Deploy on Vercel
+---
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## 💻 Local Development
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+1. Clone the repository: `git clone https://github.com/SHAN-DE101/Portfolio.git`
+2. Enter project directory: `cd Portfolio`
+3. Install dependencies: `npm install`
+4. Start development server: `npm run dev`
+
+---
+
+## 📄 License
+MIT © Shantanu Dey
