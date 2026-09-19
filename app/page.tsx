@@ -1,21 +1,24 @@
 'use client';
 
 import { useState } from 'react';
+import Navbar from '@/components/Navbar';
+import LiveStatus from '@/components/LiveStatus';
+import TechMarquee from '@/components/TechMarquee';
 import SpotlightCursor from '@/components/SpotlightCursor';
-import NavMenu from '@/components/NavMenu';
 import LiveDemoModal from '@/components/LiveDemoModal';
-import MotionCard from '@/components/MotionCard';
 import ArchitectureDrawer from '@/components/ArchitectureDrawer';
-import ContactModal from '@/components/ContactModal';
 import { 
-  FileDown, 
   ExternalLink, 
   ShieldCheck, 
-  Zap, 
   Terminal, 
-  Layers,
-  BatteryCharging,
-  Fuel
+  Layers, 
+  BatteryCharging, 
+  Fuel, 
+  ArrowUpRight,
+  Code2,
+  Cpu,
+  Lock,
+  Workflow
 } from 'lucide-react';
 
 function GithubIcon({ className = "w-5 h-5" }: { className?: string }) {
@@ -41,9 +44,9 @@ const GATEWAY_SPECS = {
   pipeline: [
     { step: 'Edge Ingress', desc: 'Routes incoming client payloads to closest edge node (iad1) minimizing round-trip overhead.' },
     { step: 'Virtual Key Auth', desc: 'Validates synthetic tenant credentials without exposing underlying provider API secrets.' },
-    { step: 'Sliding Window Rate Limiter', desc: 'Calculates instantaneous TPM (Tokens Per Minute) and RPM across a dynamic 60s sliding window.' },
+    { step: 'Sliding Window Rate Limiter', desc: 'Calculates instantaneous TPM and RPM across a dynamic 60s sliding window.' },
     { step: 'Budget Check', desc: 'Enforces hard monthly caps ($10,000 baseline) before initiating upstream dispatch.' },
-    { step: 'Zero-Retention Audit', desc: 'Captures latency, token usage, and status metadata while prompt and completion text are discarded from memory.' },
+    { step: 'Zero-Retention Audit', desc: 'Captures latency, token usage, and status metadata while discarding prompt text.' },
   ],
   securityHighlights: [
     'Virtual key obfuscation isolates tenant clients from upstream OpenAI/Anthropic API keys.',
@@ -51,7 +54,7 @@ const GATEWAY_SPECS = {
     'Zero-payload-retention policy prevents PII and LLM hallucinations from leaking into persistent logs.',
   ],
   techChoices: [
-    { title: 'Edge Runtime over Containerized Proxies', rationale: 'Sub-4ms routing overhead with instant global distribution and zero cold-start penalties.' },
+    { title: 'Edge Runtime over Containerized Proxies', rationale: 'Sub-4ms routing overhead with instant global distribution.' },
     { title: 'In-Memory Sliding Window over Fixed Window', rationale: 'Eliminates edge-boundary traffic bursting and evenly distributes high-concurrency requests.' },
   ],
 };
@@ -62,7 +65,7 @@ const LOGISTICS_SPECS = {
     badge: 'PETROLEUM ACT & GEOHASH ENGINE',
     tagline: 'High-availability emergency replenishment platform with cryptographic and legal compliance gates.',
     pipeline: [
-      { step: 'Client Haversine Resolution', desc: 'Evaluates geodesic distance and Geohash cells on the client device to query only nearby fuel depots.' },
+      { step: 'Client Haversine Resolution', desc: 'Evaluates geodesic distance and Geohash cells on the client device.' },
       { step: 'PESO Statutory Compliance Gate', desc: 'Enforces Petroleum Act of India verification before unlocking payment workflows.' },
       { step: 'Serverless Cloud Ingress', desc: 'Azure Static Web App edge invokes stateless Azure Functions with pre-warmed database pools.' },
       { step: 'Atomic Order Creation', desc: 'Transactions registered in Cosmos DB with partition keys organized by localized geohash regions.' },
@@ -75,7 +78,7 @@ const LOGISTICS_SPECS = {
     ],
     techChoices: [
       { title: 'Client-side Geohash Pre-filtering', rationale: 'Shields backend database from thousands of unnecessary radius query invocations per second.' },
-      { title: 'Azure Serverless Architecture', rationale: 'Guarantees zero idle infrastructure cost during low-demand highway hours while scaling instantaneously.' },
+      { title: 'Azure Serverless Architecture', rationale: 'Guarantees zero idle infrastructure cost during low-demand highway hours.' },
     ],
   },
   echarge: {
@@ -83,7 +86,7 @@ const LOGISTICS_SPECS = {
     badge: 'ON-DEMAND EV LOGISTICS',
     tagline: 'Dynamic mobile charging van dispatch with per-kWh algorithmic billing and cold-start pre-warming.',
     pipeline: [
-      { step: 'Vehicle Model & Port Resolution', desc: 'Identifies EV model, charging protocol (CCS2, Type 2, GB/T), and target kWh requirement.' },
+      { step: 'Vehicle Model & Port Resolution', desc: 'Identifies EV model, charging protocol (CCS2, Type 2, GB/T), and target kWh.' },
       { step: 'Fleet Haversine Sourcing', desc: 'Locates nearest mobile fast-charging van equipped with DC fast-charge batteries.' },
       { step: 'Shoulder Safety Compliance Gate', desc: 'Mandatory verification that vehicle is safely stationary with accessible charging port.' },
       { step: 'Single-Tap UPI Intent', desc: 'Calculates dynamic base delivery fee + per-kW pricing dispatched over deep-linked payment.' },
@@ -95,8 +98,8 @@ const LOGISTICS_SPECS = {
       'Immutable Cosmos DB ledger for real-time auditability across high-voltage power transactions.',
     ],
     techChoices: [
-      { title: 'Per-kW Dynamic Metering over Flat Fee', rationale: 'Fair, transparent billing proportional to highway range required to reach next grid station.' },
-      { title: 'Edge Single Page Application (SPA)', rationale: 'Compiles lightweight React bundles to minimize Time-to-First-Byte in weak highway cellular areas.' },
+      { title: 'Per-kW Dynamic Metering over Flat Fee', rationale: 'Fair, transparent billing proportional to highway range required.' },
+      { title: 'Edge Single Page Application (SPA)', rationale: 'Compiles lightweight React bundles to minimize Time-to-First-Byte.' },
     ],
   },
 };
@@ -106,335 +109,349 @@ export default function Home() {
   const activeLogistics = LOGISTICS_SPECS[logisticsMode];
 
   return (
-    <div className="relative bg-[#0b1120] text-slate-300 selection:bg-teal-300 selection:text-slate-900 min-h-screen">
+    <div className="relative bg-[#0b1120] text-slate-300 min-h-screen selection:bg-teal-300 selection:text-slate-900 font-sans">
       <SpotlightCursor />
+      <Navbar />
 
-      <div className="mx-auto max-w-screen-xl px-6 py-12 md:px-12 md:py-20 lg:px-24 lg:py-0">
-        <div className="lg:flex lg:justify-between lg:gap-12">
+      {/* ================= HERO SECTION ================= */}
+      <section className="pt-32 pb-16 px-6 sm:px-12 max-w-5xl mx-auto flex flex-col items-center text-center">
+        <LiveStatus />
 
-          {/* ================= LEFT PANE ================= */}
-          <header className="lg:sticky lg:top-0 lg:flex lg:max-h-screen lg:w-[45%] lg:flex-col lg:justify-between lg:py-24">
-            <div>
-              <h1 className="text-4xl font-extrabold tracking-tight text-slate-100 sm:text-5xl">
-                Shantanu Dey
-              </h1>
-              <h2 className="mt-3 text-lg font-medium text-teal-400 sm:text-xl font-mono">
-                Software Engineer · Cloud & Security
+        <h1 className="mt-8 text-4xl sm:text-6xl md:text-7xl font-extrabold tracking-tight text-slate-100 max-w-3xl leading-[1.1]">
+          Building <span className="text-transparent bg-clip-text bg-gradient-to-r from-teal-300 via-teal-400 to-emerald-400">resilient systems</span> for the cloud.
+        </h1>
+
+        <p className="mt-6 text-base sm:text-lg text-slate-400 max-w-2xl leading-relaxed">
+          I&apos;m <span className="text-slate-200 font-semibold">Shantanu Dey</span> — a Software Engineer & Cloud Security Architect. 
+          I engineer low-latency edge proxies, serverless distributed logistics, and high-assurance backend pipelines.
+        </p>
+
+        <div className="mt-8 flex flex-wrap items-center justify-center gap-4">
+          <a
+            href="#projects"
+            className="px-6 py-3 rounded-full bg-teal-400 text-slate-950 font-mono text-xs font-bold hover:bg-teal-300 transition flex items-center gap-2 shadow-lg shadow-teal-500/20"
+          >
+            <Cpu className="w-4 h-4" /> Explore Architectures
+          </a>
+          <a
+            href="https://github.com/SHAN-DE101"
+            target="_blank"
+            rel="noreferrer"
+            className="px-6 py-3 rounded-full border border-slate-800 bg-slate-900/60 hover:bg-slate-800 text-slate-200 font-mono text-xs transition flex items-center gap-2"
+          >
+            <GithubIcon className="w-4 h-4" /> GitHub Profile
+          </a>
+          <a
+            href="https://www.linkedin.com/in/shantanu-dey-7724571b2/"
+            target="_blank"
+            rel="noreferrer"
+            className="p-3 rounded-full border border-slate-800 bg-slate-900/60 hover:bg-slate-800 text-slate-200 transition"
+            aria-label="LinkedIn"
+          >
+            <LinkedinIcon className="w-4 h-4" />
+          </a>
+        </div>
+      </section>
+
+      {/* INFINITE TECH MARQUEE */}
+      <TechMarquee />
+
+      {/* ================= MAIN CONTAINER ================= */}
+      <div className="max-w-5xl mx-auto px-6 sm:px-12 py-20 space-y-28">
+
+        {/* ABOUT SECTION */}
+        <section id="about" className="scroll-mt-24">
+          <div className="flex items-center gap-2 text-xs font-mono uppercase tracking-widest text-teal-400 mb-4">
+            <Terminal className="w-4 h-4" /> // 01. Background & Philosophy
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="md:col-span-2 p-6 rounded-2xl border border-slate-800 bg-slate-900/40 backdrop-blur-sm">
+              <h2 className="text-xl font-bold text-slate-100 mb-4">
+                Engineering with High-Throughput & Zero-Trust Discipline
               </h2>
-              <p className="mt-4 max-w-sm text-sm leading-relaxed text-slate-400">
-                Architecting resilient backend pipelines, edge API gateways, and serverless distributed systems 
-                grounded in rigorous cybersecurity practices and high-assurance networking.
+              <p className="text-sm text-slate-400 leading-relaxed mb-4">
+                With a background in enterprise Java and Spring Boot from my tenure at{' '}
+                <span className="text-slate-200 font-medium">Persistent Systems</span>, I bridge robust distributed backend architecture 
+                with edge-first microservices.
               </p>
-
-              <NavMenu />
+              <p className="text-sm text-slate-400 leading-relaxed">
+                Currently completing my <span className="text-slate-200 font-medium">M.Tech in Information Security</span>, 
+                I treat security not as an afterthought but as an immutable foundation — architecting systems with zero-retention logging, 
+                cryptographic out-of-band validation, and strict rate governance.
+              </p>
             </div>
 
-            {/* Social & Contact Bar */}
-            <div className="flex flex-wrap items-center gap-4 mt-8 lg:mt-0">
-              <a 
-                href="https://github.com/SHAN-DE101" 
-                target="_blank" 
-                rel="noreferrer" 
-                className="text-slate-400 hover:text-teal-300 transition p-1"
-                aria-label="GitHub Profile"
-              >
-                <GithubIcon className="w-5 h-5" />
-              </a>
-              <a 
-                href="https://www.linkedin.com/in/shantanu-dey-7724571b2/" 
-                target="_blank" 
-                rel="noreferrer" 
-                className="text-slate-400 hover:text-teal-300 transition p-1"
-                aria-label="LinkedIn Profile"
-              >
-                <LinkedinIcon className="w-5 h-5" />
-              </a>
-
-              <ContactModal />
-
-              <a
-                href="/ShantanuDey_Resume.pdf"
-                download
-                className="flex items-center gap-1.5 text-xs font-mono px-3.5 py-1.5 rounded-full border border-slate-700 text-slate-300 hover:bg-slate-800 transition"
-              >
-                <FileDown className="w-3.5 h-3.5" /> Resume
-              </a>
-            </div>
-          </header>
-
-          {/* ================= RIGHT PANE ================= */}
-          <main className="pt-24 lg:w-[55%] lg:py-24 space-y-24">
-
-            {/* ABOUT */}
-            <section id="about" className="scroll-mt-16">
-              <p className="text-sm leading-relaxed text-slate-400">
-                With a strong foundation in enterprise Java, Spring Boot, and cloud services from my tenure at{' '}
-                <span className="text-slate-200 font-medium">Persistent Systems</span>, my work centers on high-throughput backend infrastructure 
-                and low-latency edge computing. Currently pursuing an{' '}
-                <span className="text-slate-200 font-medium">M.Tech in Information Security / Cyber Security</span> at MAKAUT, 
-                I focus on architecting distributed platforms that pair cryptographic guarantees and privacy-first pipelines 
-                with sub-millisecond execution.
-              </p>
-            </section>
-
-            {/* FLAGSHIP PROJECTS */}
-            <section id="flagships" className="scroll-mt-16 space-y-12">
-              <div className="flex items-center gap-2 text-xs font-mono uppercase tracking-widest text-teal-400">
-                <Zap className="w-4 h-4" /> Featured Systems Architecture
+            <div className="p-6 rounded-2xl border border-slate-800 bg-slate-900/40 flex flex-col justify-between">
+              <div>
+                <div className="text-xs font-mono uppercase text-slate-400 mb-2">Credentials</div>
+                <div className="space-y-3">
+                  <div>
+                    <div className="text-xs font-semibold text-slate-200">M.Tech Cyber Security</div>
+                    <div className="text-[11px] font-mono text-teal-400">MAKAUT · 2024–2026</div>
+                  </div>
+                  <div>
+                    <div className="text-xs font-semibold text-slate-200">B.Tech IT</div>
+                    <div className="text-[11px] font-mono text-slate-400">Techno India · 2016–2020</div>
+                  </div>
+                </div>
               </div>
 
-              {/* PROJECT 1: AI TOKEN GATEWAY */}
-              <MotionCard className="rounded-2xl border border-teal-500/20 bg-slate-900/60 p-6 transition-all hover:border-teal-400/40 hover:bg-slate-900/90 shadow-lg">
-                <div className="flex items-center justify-between text-xs font-mono text-teal-400 mb-2">
-                  <span className="flex items-center gap-1.5">
-                    <Terminal className="w-3.5 h-3.5" /> EDGE REVERSE PROXY
+              <div className="pt-4 border-t border-slate-800/80">
+                <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded text-[11px] font-mono bg-blue-950/40 text-blue-300 border border-blue-500/30">
+                  <ShieldCheck className="w-3.5 h-3.5" /> Azure AZ-900 Certified
+                </span>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* BENTO PROJECTS SECTION */}
+        <section id="projects" className="scroll-mt-24 space-y-8">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2 text-xs font-mono uppercase tracking-widest text-teal-400">
+              <Workflow className="w-4 h-4" /> // 02. Flagship Systems Architecture
+            </div>
+            <span className="text-xs font-mono text-slate-500">Bento Overview</span>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+            {/* PROJECT 1: AI TOKEN GATEWAY */}
+            <div className="group relative rounded-2xl border border-slate-800 bg-slate-900/50 p-6 hover:border-teal-500/40 transition duration-300 flex flex-col justify-between">
+              <div>
+                <div className="flex items-center justify-between text-xs font-mono text-teal-400 mb-3">
+                  <span className="flex items-center gap-1">
+                    <Code2 className="w-3.5 h-3.5" /> EDGE REVERSE PROXY
                   </span>
                   <div className="flex items-center gap-2">
-                    <ArchitectureDrawer data={GATEWAY_SPECS} triggerText="Architecture Sheet" accentColor="teal" />
+                    <ArchitectureDrawer data={GATEWAY_SPECS} triggerText="Specs" accentColor="teal" />
                     <LiveDemoModal
                       url="https://ai-token-gateway.vercel.app/dashboard"
                       title="AI Token Gateway Console"
-                      triggerText="Live Console"
+                      triggerText="Console"
                       themeColor="teal"
                     />
-                    <a 
-                      href="https://ai-token-gateway.vercel.app/dashboard" 
-                      target="_blank" 
+                    <a
+                      href="https://ai-token-gateway.vercel.app/dashboard"
+                      target="_blank"
                       rel="noreferrer"
-                      className="text-slate-400 hover:text-teal-300 transition p-1"
-                      aria-label="Open AI Token Gateway in new tab"
+                      className="text-slate-400 hover:text-teal-300 transition"
+                      aria-label="Open project"
                     >
-                      <ExternalLink className="w-4 h-4" />
+                      <ArrowUpRight className="w-4 h-4" />
                     </a>
                   </div>
                 </div>
 
-                <h3 className="text-xl font-bold text-slate-100">
+                <h3 className="text-xl font-bold text-slate-100 group-hover:text-teal-300 transition">
                   AI Token Gateway & Virtual Key Router
                 </h3>
 
-                <p className="mt-3 text-sm text-slate-300 leading-relaxed">
+                <p className="mt-3 text-xs sm:text-sm text-slate-400 leading-relaxed">
                   A high-throughput edge reverse proxy designed to enforce token rate limiting, multi-tenant budget metering, 
-                  and live execution telemetry across LLM providers.
+                  and live execution telemetry across upstream LLM providers.
                 </p>
 
-                <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs text-slate-400 font-mono">
-                  <div className="bg-slate-800/60 p-2.5 rounded-lg border border-slate-700/50">
-                    <span className="text-teal-300 block mb-1">⚡ Request Pipeline</span>
-                    Ingress → Key check → Sliding window rate limiting → Budget → Edge provider.
+                <div className="mt-4 p-3 rounded-lg bg-slate-950/70 border border-slate-800/80 font-mono text-xs space-y-1 text-slate-300">
+                  <div className="flex items-center gap-2 text-[11px] text-teal-300">
+                    <span>⚡ Sub-4ms edge routing overhead</span>
                   </div>
-                  <div className="bg-slate-800/60 p-2.5 rounded-lg border border-slate-700/50">
-                    <span className="text-teal-300 block mb-1">🛡️ Zero-Retention Privacy</span>
-                    Metadata-only auditing. Request & completion payloads are never stored on disk.
+                  <div className="flex items-center gap-2 text-[11px] text-slate-400">
+                    <span>🛡️ Sliding-window token governor (TPM/RPM)</span>
+                  </div>
+                  <div className="flex items-center gap-2 text-[11px] text-slate-400">
+                    <span>🔒 Zero-retention privacy auditing</span>
                   </div>
                 </div>
+              </div>
 
-                <div className="mt-5 flex flex-wrap gap-2">
-                  {['TypeScript', 'Edge Runtime', 'Sliding Window', 'Virtual Keys', 'Token Telemetry', 'Tailwind CSS'].map(tag => (
-                    <span key={tag} className="px-2.5 py-1 text-xs font-mono text-teal-300 bg-teal-950/50 rounded-full border border-teal-500/20">
-                      {tag}
-                    </span>
-                  ))}
-                </div>
-              </MotionCard>
+              <div className="mt-6 flex flex-wrap gap-1.5">
+                {['TypeScript', 'Edge Runtime', 'Sliding Window', 'Virtual Keys', 'Tailwind'].map(t => (
+                  <span key={t} className="px-2.5 py-0.5 text-[11px] font-mono text-teal-300 bg-teal-950/40 rounded border border-teal-500/20">
+                    {t}
+                  </span>
+                ))}
+              </div>
+            </div>
 
-              {/* PROJECT 2: E-FUEL / E-CHARGE LOGISTICS ENGINE */}
-              <MotionCard className="rounded-2xl border border-amber-500/20 bg-slate-900/60 p-6 transition-all hover:border-amber-400/40 hover:bg-slate-900/90 shadow-lg">
-                <div className="flex flex-wrap items-center justify-between gap-2 text-xs font-mono text-amber-400 mb-2">
-                  <div className="flex items-center gap-1.5">
+            {/* PROJECT 2: E-FUEL / E-CHARGE */}
+            <div className="group relative rounded-2xl border border-slate-800 bg-slate-900/50 p-6 hover:border-amber-500/40 transition duration-300 flex flex-col justify-between">
+              <div>
+                <div className="flex items-center justify-between text-xs font-mono text-amber-400 mb-3">
+                  <div className="flex items-center gap-1">
                     <Layers className="w-3.5 h-3.5" />
-                    <span>ON-DEMAND EMERGENCY LOGISTICS</span>
+                    <span>EMERGENCY LOGISTICS</span>
                   </div>
 
-                  {/* Mode Switcher */}
-                  <div className="flex items-center bg-slate-950/80 p-0.5 rounded-lg border border-slate-800">
+                  <div className="flex items-center bg-slate-950 p-0.5 rounded border border-slate-800">
                     <button
                       type="button"
                       onClick={() => setLogisticsMode('efuel')}
-                      className={`flex items-center gap-1 px-2.5 py-1 rounded text-[11px] font-mono transition ${
-                        logisticsMode === 'efuel' ? 'bg-amber-500/20 text-amber-300 border border-amber-500/40' : 'text-slate-400 hover:text-slate-200'
+                      className={`px-2 py-0.5 rounded text-[10px] font-mono transition ${
+                        logisticsMode === 'efuel' ? 'bg-amber-500/20 text-amber-300' : 'text-slate-400'
                       }`}
                     >
-                      <Fuel className="w-3 h-3" /> E-Fuel
+                      <Fuel className="w-3 h-3 inline mr-1" /> Fuel
                     </button>
                     <button
                       type="button"
                       onClick={() => setLogisticsMode('echarge')}
-                      className={`flex items-center gap-1 px-2.5 py-1 rounded text-[11px] font-mono transition ${
-                        logisticsMode === 'echarge' ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/40' : 'text-slate-400 hover:text-slate-200'
+                      className={`px-2 py-0.5 rounded text-[10px] font-mono transition ${
+                        logisticsMode === 'echarge' ? 'bg-emerald-500/20 text-emerald-300' : 'text-slate-400'
                       }`}
                     >
-                      <BatteryCharging className="w-3 h-3" /> E-Charge (EV)
+                      <BatteryCharging className="w-3 h-3 inline mr-1" /> EV
                     </button>
                   </div>
                 </div>
 
-                <div className="flex items-center justify-between mt-1">
-                  <h3 className="text-xl font-bold text-slate-100">
-                    {logisticsMode === 'efuel' ? 'E-Fuel: On-Demand Highway Fuel Dispatch' : 'E-Charge: Mobile EV Charging Fleet'}
+                <div className="flex items-center justify-between">
+                  <h3 className="text-xl font-bold text-slate-100 group-hover:text-amber-300 transition">
+                    {logisticsMode === 'efuel' ? 'E-Fuel: Highway Fuel Dispatch' : 'E-Charge: Mobile EV Fleet'}
                   </h3>
-
                   <div className="flex items-center gap-2">
-                    <ArchitectureDrawer data={activeLogistics} triggerText="Architecture Sheet" accentColor="amber" />
-                    {logisticsMode === 'efuel' ? (
+                    <ArchitectureDrawer data={activeLogistics} triggerText="Specs" accentColor="amber" />
+                    {logisticsMode === 'efuel' && (
                       <LiveDemoModal
                         url="/efuel-demo.html"
-                        title="E-Fuel Logistics & Dispatch Simulator"
-                        triggerText="Live Sandbox"
+                        title="E-Fuel Logistics Simulator"
+                        triggerText="Sandbox"
                         themeColor="amber"
                       />
-                    ) : (
-                      <span className="text-[11px] font-mono text-emerald-400 bg-emerald-950/40 px-2 py-0.5 rounded border border-emerald-500/30">
-                        PRD Architecture
-                      </span>
                     )}
                   </div>
                 </div>
 
-                <p className="mt-3 text-sm text-slate-300 leading-relaxed">
+                <p className="mt-3 text-xs sm:text-sm text-slate-400 leading-relaxed">
                   {logisticsMode === 'efuel'
-                    ? 'An emergency fuel replenishment platform resolving highway breakdown gaps through real-time geodesic matching, statutory compliance gates, and zero-idle cloud topology.'
-                    : 'A serverless EV charging logistics system matching stranded electric vehicles with mobile battery vans using Haversine geodesic routing, kW billing, and cold-start mitigations.'}
+                    ? 'Emergency fuel replenishment platform with client-side Haversine spatial resolution, PESO safety compliance, and out-of-band PIN verification.'
+                    : 'Serverless EV charging logistics system matching stranded electric vehicles with mobile DC fast-charging battery vans using per-kWh pricing.'}
                 </p>
 
-                <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs text-slate-400 font-mono">
-                  <div className="bg-slate-800/60 p-2.5 rounded-lg border border-slate-700/50">
-                    <span className="text-amber-300 block mb-1">
-                      {logisticsMode === 'efuel' ? '📍 Algorithmic Sourcing' : '⚡ Dynamic EV Metering'}
-                    </span>
-                    {logisticsMode === 'efuel'
-                      ? 'Client-side Haversine spatial resolution with Geohash clustering to match stations in <1ms.'
-                      : 'Per-kW algorithmic pricing + geodesic delivery fee processed via UPI Intent.'}
+                <div className="mt-4 p-3 rounded-lg bg-slate-950/70 border border-slate-800/80 font-mono text-xs space-y-1 text-slate-300">
+                  <div className="flex items-center gap-2 text-[11px] text-amber-300">
+                    <span>📍 {logisticsMode === 'efuel' ? 'Sub-ms Haversine Geohash clustering' : 'Dynamic per-kW metering'}</span>
                   </div>
-                  <div className="bg-slate-800/60 p-2.5 rounded-lg border border-slate-700/50">
-                    <span className="text-amber-300 block mb-1">
-                      {logisticsMode === 'efuel' ? '🔐 Compliance Gate' : '🛡️ Zero-Trust Handshake'}
-                    </span>
-                    {logisticsMode === 'efuel'
-                      ? '4-digit PIN verification required on-site; PESO container compliance enforcement.'
-                      : 'Out-of-band PIN unlocks van charging sequence; function pre-warming masks cold starts.'}
+                  <div className="flex items-center gap-2 text-[11px] text-slate-400">
+                    <span>🔐 Out-of-band 4-digit PIN verification</span>
                   </div>
-                </div>
-
-                <div className="mt-5 flex flex-wrap gap-2">
-                  {(logisticsMode === 'efuel'
-                    ? ['React 18', 'Azure Functions', 'Cosmos DB NoSQL', 'Haversine Formula', 'PESO Safety', 'UPI Intent']
-                    : ['EV Logistics', 'Azure Static Apps', 'Azure Key Vault', 'Geohash Radius', 'Managed Identity', 'OWASP Defense']
-                  ).map(tag => (
-                    <span key={tag} className="px-2.5 py-1 text-xs font-mono text-amber-300 bg-amber-950/50 rounded-full border border-amber-500/20">
-                      {tag}
-                    </span>
-                  ))}
-                </div>
-              </MotionCard>
-            </section>
-
-            {/* EXPERIENCE */}
-            <section id="experience" className="scroll-mt-16">
-              <h3 className="text-xs font-mono uppercase tracking-widest text-slate-400 mb-6">
-                Professional Experience
-              </h3>
-
-              <MotionCard className="rounded-xl border border-slate-800/80 p-5 transition-all hover:border-slate-700 hover:bg-slate-800/30">
-                <div className="text-xs font-mono text-teal-400 mb-1">DEC 2021 — DEC 2022</div>
-                <h4 className="text-base font-semibold text-slate-100">
-                  Software Engineer · Persistent Systems Ltd.
-                </h4>
-                <div className="text-xs font-mono text-slate-400 mb-3">Hinjewadi, Pune, India</div>
-                <ul className="space-y-2 text-sm text-slate-400 list-disc list-inside">
-                  <li>Developed and validated high-throughput backend APIs utilizing Spring Boot and automated Postman suites.</li>
-                  <li>Configured NoSQL database clusters, assisted schema modeling, and tuned query performance.</li>
-                  <li>Managed continuous integration pipelines with Maven and streamlined team Git versioning in Agile sprints.</li>
-                </ul>
-                <div className="mt-4 flex flex-wrap gap-2">
-                  {['Java', 'Spring Boot', 'REST APIs', 'NoSQL', 'Maven', 'Git', 'Agile'].map(s => (
-                    <span key={s} className="px-2 py-0.5 text-xs font-mono bg-slate-800 text-slate-300 rounded">
-                      {s}
-                    </span>
-                  ))}
-                </div>
-              </MotionCard>
-            </section>
-
-            {/* SUPPORTING PROJECTS */}
-            <section id="projects" className="scroll-mt-16 space-y-6">
-              <h3 className="text-xs font-mono uppercase tracking-widest text-slate-400 mb-4">
-                Other Engineering Projects
-              </h3>
-
-              {/* Payment Gateway */}
-              <MotionCard className="rounded-xl border border-slate-800/80 p-5 hover:border-slate-700 hover:bg-slate-800/20 transition">
-                <h4 className="text-base font-semibold text-slate-200">Serverless Payment Gateway Integration</h4>
-                <p className="mt-2 text-sm text-slate-400 leading-normal">
-                  Engineered stateless Azure Function components to handle secure payment workflows, ensure transaction idempotency, 
-                  and scale communication across microservices.
-                </p>
-                <div className="mt-3 flex flex-wrap gap-2">
-                  {['Microsoft Azure', 'RESTful APIs', 'Maven', 'Serverless'].map(t => (
-                    <span key={t} className="text-xs font-mono text-slate-400 bg-slate-800/80 px-2 py-0.5 rounded">
-                      {t}
-                    </span>
-                  ))}
-                </div>
-              </MotionCard>
-
-              {/* Object Detection */}
-              <MotionCard className="rounded-xl border border-slate-800/80 p-5 hover:border-slate-700 hover:bg-slate-800/20 transition">
-                <h4 className="text-base font-semibold text-slate-200">Real-Time Object Detection (HAAR Cascade)</h4>
-                <p className="mt-2 text-sm text-slate-400 leading-normal">
-                  Constructed an image recognition pipeline applying AdaBoost learning algorithms with OpenCV 
-                  for frame-by-frame object classification across live camera streams.
-                </p>
-                <div className="mt-3 flex flex-wrap gap-2">
-                  {['Python', 'OpenCV', 'AdaBoost', 'Computer Vision'].map(t => (
-                    <span key={t} className="text-xs font-mono text-slate-400 bg-slate-800/80 px-2 py-0.5 rounded">
-                      {t}
-                    </span>
-                  ))}
-                </div>
-              </MotionCard>
-            </section>
-
-            {/* SKILLS & SECURITY */}
-            <section id="skills" className="scroll-mt-16 space-y-8">
-              <div>
-                <h3 className="text-xs font-mono uppercase tracking-widest text-slate-400 mb-3">Education & Credentials</h3>
-                <div className="space-y-3 text-sm">
-                  <div>
-                    <div className="font-semibold text-slate-200">M.Tech in Information Security / Cyber Security</div>
-                    <div className="text-teal-400 text-xs font-mono">MAKAUT · 2024 – 2026</div>
-                  </div>
-                  <div>
-                    <div className="font-semibold text-slate-200">B.Tech in Information Technology</div>
-                    <div className="text-slate-400 text-xs font-mono">Techno India Group (BIT), MAKAUT · 2016 – 2020</div>
-                  </div>
-                  <div className="pt-2">
-                    <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-mono bg-blue-950/40 text-blue-300 border border-blue-500/30">
-                      <ShieldCheck className="w-3.5 h-3.5" /> Microsoft Certified: Azure Fundamentals (AZ-900)
-                    </span>
+                  <div className="flex items-center gap-2 text-[11px] text-slate-400">
+                    <span>⚡ Stateless Azure Functions + Cosmos DB</span>
                   </div>
                 </div>
               </div>
 
-              <div>
-                <h3 className="text-xs font-mono uppercase tracking-widest text-slate-400 mb-3">Core Tech Stack</h3>
-                <div className="flex flex-wrap gap-2">
-                  {[
-                    'Core Java', 'Spring Boot', 'Python', 'TypeScript', 'Node.js', 
-                    'REST APIs', 'Docker', 'Kubernetes', 'Azure Cloud', 'Cosmos DB', 
-                    'PostgreSQL', 'MongoDB', 'Wireshark', 'Metasploit', 'Nmap', 'Git'
-                  ].map(skill => (
-                    <span key={skill} className="px-2.5 py-1 text-xs font-mono bg-slate-800/70 text-slate-300 rounded border border-slate-700/60">
-                      {skill}
-                    </span>
-                  ))}
-                </div>
+              <div className="mt-6 flex flex-wrap gap-1.5">
+                {(logisticsMode === 'efuel'
+                  ? ['React 18', 'Azure Functions', 'Cosmos DB', 'Haversine', 'PESO Act']
+                  : ['EV Fleet', 'Azure Static Apps', 'Key Vault', 'Zero-Trust', 'UPI']
+                ).map(t => (
+                  <span key={t} className="px-2.5 py-0.5 text-[11px] font-mono text-amber-300 bg-amber-950/40 rounded border border-amber-500/20">
+                    {t}
+                  </span>
+                ))}
               </div>
-            </section>
+            </div>
 
-          </main>
-        </div>
+          </div>
+        </section>
+
+        {/* WORK EXPERIENCE SECTION */}
+        <section id="experience" className="scroll-mt-24">
+          <div className="flex items-center gap-2 text-xs font-mono uppercase tracking-widest text-teal-400 mb-6">
+            <Lock className="w-4 h-4" /> // 03. Experience & Engineering Record
+          </div>
+
+          <div className="relative border-l border-slate-800 ml-3 space-y-8">
+            <div className="relative pl-6">
+              <span className="absolute -left-[5px] top-1.5 h-2.5 w-2.5 rounded-full bg-teal-400 border border-[#0b1120]" />
+              <div className="text-xs font-mono text-teal-400">DEC 2021 — DEC 2022</div>
+              <h3 className="text-base font-semibold text-slate-100 mt-1">
+                Software Engineer · Persistent Systems Ltd.
+              </h3>
+              <div className="text-xs font-mono text-slate-500">Hinjewadi, Pune, India</div>
+              <ul className="mt-3 space-y-1.5 text-xs sm:text-sm text-slate-400 list-disc list-inside leading-relaxed">
+                <li>Engineered high-throughput backend APIs utilizing Spring Boot and automated Postman test suites.</li>
+                <li>Designed NoSQL schemas and tuned cluster queries for distributed transaction performance.</li>
+                <li>Managed CI/CD deployment pipelines using Maven and streamlined team Git workflows.</li>
+              </ul>
+              <div className="mt-3 flex flex-wrap gap-1.5">
+                {['Java', 'Spring Boot', 'REST APIs', 'NoSQL', 'Maven', 'Git'].map(s => (
+                  <span key={s} className="px-2 py-0.5 text-[10px] font-mono bg-slate-800 text-slate-300 rounded">
+                    {s}
+                  </span>
+                ))}
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* SKILLS SECTION */}
+        <section id="skills" className="scroll-mt-24">
+          <div className="flex items-center gap-2 text-xs font-mono uppercase tracking-widest text-teal-400 mb-6">
+            <Cpu className="w-4 h-4" /> // 04. Technical Capabilities
+          </div>
+
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 text-xs font-mono">
+            <div className="p-4 rounded-xl border border-slate-800 bg-slate-900/30">
+              <span className="text-teal-300 font-semibold block mb-2">Backend</span>
+              <ul className="space-y-1 text-slate-400">
+                <li>Core Java</li>
+                <li>Spring Boot</li>
+                <li>Node.js / Express</li>
+                <li>RESTful Microservices</li>
+              </ul>
+            </div>
+            <div className="p-4 rounded-xl border border-slate-800 bg-slate-900/30">
+              <span className="text-teal-300 font-semibold block mb-2">Cloud & DB</span>
+              <ul className="space-y-1 text-slate-400">
+                <li>Microsoft Azure</li>
+                <li>Azure Functions</li>
+                <li>Cosmos DB NoSQL</li>
+                <li>PostgreSQL / MongoDB</li>
+              </ul>
+            </div>
+            <div className="p-4 rounded-xl border border-slate-800 bg-slate-900/30">
+              <span className="text-teal-300 font-semibold block mb-2">Frontend</span>
+              <ul className="space-y-1 text-slate-400">
+                <li>Next.js 15 (App)</li>
+                <li>React 18</li>
+                <li>TypeScript</li>
+                <li>Tailwind CSS</li>
+              </ul>
+            </div>
+            <div className="p-4 rounded-xl border border-slate-800 bg-slate-900/30">
+              <span className="text-teal-300 font-semibold block mb-2">Security & DevOps</span>
+              <ul className="space-y-1 text-slate-400">
+                <li>Wireshark / Nmap</li>
+                <li>Metasploit</li>
+                <li>Docker / Kubernetes</li>
+                <li>Git / CI/CD Actions</li>
+              </ul>
+            </div>
+          </div>
+        </section>
+
       </div>
+
+      {/* ================= FOOTER ================= */}
+      <footer className="border-t border-slate-800/80 py-10 px-6 text-center text-xs font-mono text-slate-500">
+        <div className="flex flex-col sm:flex-row items-center justify-between max-w-5xl mx-auto gap-4">
+          <div>© {new Date().getFullYear()} Shantanu Dey · Crafted with Next.js 15 & Tailwind CSS</div>
+          <div className="flex items-center gap-4 text-slate-400">
+            <a href="https://github.com/SHAN-DE101" target="_blank" rel="noreferrer" className="hover:text-teal-300 transition">
+              GitHub
+            </a>
+            <a href="https://www.linkedin.com/in/shantanu-dey-7724571b2/" target="_blank" rel="noreferrer" className="hover:text-teal-300 transition">
+              LinkedIn
+            </a>
+            <a href="mailto:deyshantanu101@gmail.com" className="hover:text-teal-300 transition">
+              Email
+            </a>
+          </div>
+        </div>
+      </footer>
     </div>
   );
 }
