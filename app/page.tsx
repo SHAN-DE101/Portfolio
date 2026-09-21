@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Mail,
@@ -12,16 +12,15 @@ import {
   GraduationCap,
   Award,
   Check,
-  Copy,
   Command,
   Search,
   X,
   Code2,
   Shield,
   Cloud,
-  Layers,
 } from "lucide-react";
 import TechMarquee from "@/components/Marquee";
+import SpotlightCard from "@/components/SpotlightCard";
 
 function GithubIcon({ className = "w-4 h-4" }: { className?: string }) {
   return (
@@ -66,10 +65,12 @@ export default function Home() {
     return () => clearInterval(interval);
   }, []);
 
-  // Keyboard shortcut listener for '/' or 'Cmd+K'
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if ((e.key === "k" && (e.metaKey || e.ctrlKey)) || (e.key === "/" && !["INPUT", "TEXTAREA"].includes((e.target as HTMLElement).tagName))) {
+      if (
+        (e.key === "k" && (e.metaKey || e.ctrlKey)) ||
+        (e.key === "/" && !["INPUT", "TEXTAREA"].includes((e.target as HTMLElement).tagName))
+      ) {
         e.preventDefault();
         setCmdOpen((prev) => !prev);
       }
@@ -138,8 +139,10 @@ export default function Home() {
     { label: "Jump to Experience", action: () => { window.location.href = "#experience"; setCmdOpen(false); }, icon: Briefcase, hint: "#experience" },
   ];
 
-  const filteredCommands = commandItems.filter((c) =>
-    c.label.toLowerCase().includes(searchFilter.toLowerCase()) || c.hint.toLowerCase().includes(searchFilter.toLowerCase())
+  const filteredCommands = commandItems.filter(
+    (c) =>
+      c.label.toLowerCase().includes(searchFilter.toLowerCase()) ||
+      c.hint.toLowerCase().includes(searchFilter.toLowerCase())
   );
 
   return (
@@ -187,7 +190,7 @@ export default function Home() {
               </span>
             </h1>
             <p className="text-lg text-zinc-400 max-w-2xl leading-relaxed">
-              Software Engineer with experience at <span className="text-white font-medium">Persistent Systems</span>. 
+              Software Engineer with industry experience at <span className="text-white font-medium">Persistent Systems</span>. 
               Specializing in <span className="text-zinc-200">Java, Spring Boot, REST APIs, and Azure Cloud</span> with an academic focus on 
               <span className="text-zinc-200"> M.Tech Information &amp; Cyber Security</span>. Passionate about resilient distributed systems, 
               scalable databases, and secure architecture.
@@ -198,7 +201,7 @@ export default function Home() {
           <div className="flex flex-wrap items-center gap-3 pt-2">
             <button
               onClick={copyEmail}
-              className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-white text-black text-sm font-semibold hover:bg-zinc-200 transition-all shadow-md active:scale-95"
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-white text-black text-sm font-semibold hover:bg-zinc-200 transition-all shadow-md active:scale-95 cursor-pointer"
             >
               {copied ? <Check className="w-4 h-4 text-emerald-600" /> : <Mail className="w-4 h-4" />}
               <span>{copied ? "Email Copied!" : "deyshantanu101@gmail.com"}</span>
@@ -224,7 +227,7 @@ export default function Home() {
           </div>
         </section>
 
-        {/* Experience Section */}
+        {/* Experience Section with Spotlight */}
         <section id="experience" className="space-y-6">
           <div className="flex items-center justify-between">
             <h2 className="text-2xl font-bold tracking-tight text-white flex items-center gap-2">
@@ -234,7 +237,7 @@ export default function Home() {
             <span className="text-xs text-zinc-500 font-mono">1 Year Industry</span>
           </div>
 
-          <div className="relative group p-6 rounded-2xl border border-zinc-800/80 bg-zinc-950/60 hover:border-zinc-700/80 transition-all space-y-4">
+          <SpotlightCard className="space-y-4">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1">
               <div>
                 <h3 className="text-lg font-semibold text-white group-hover:text-emerald-400 transition-colors">
@@ -252,10 +255,10 @@ export default function Home() {
               <li>Engineered clean code in Agile sprints, ensuring seamless version control and code reviews with Git.</li>
               <li>Supported debugging, profiling, and testing to enhance backend throughput and reliability.</li>
             </ul>
-          </div>
+          </SpotlightCard>
         </section>
 
-        {/* Featured Projects */}
+        {/* Featured Projects with Spotlight */}
         <section id="projects" className="space-y-6">
           <div className="flex items-center justify-between">
             <h2 className="text-2xl font-bold tracking-tight text-white flex items-center gap-2">
@@ -273,40 +276,41 @@ export default function Home() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: idx * 0.1 }}
-                className="group p-6 rounded-2xl border border-zinc-800/80 bg-zinc-950/60 hover:bg-zinc-900/30 hover:border-zinc-700/80 transition-all duration-300"
               >
-                <div className="flex items-start justify-between">
-                  <div className="space-y-2.5">
-                    <div className="flex items-center gap-3">
-                      <span className="text-xs font-mono text-zinc-500">0{idx + 1}</span>
-                      <h3 className="text-lg font-semibold text-white group-hover:text-emerald-400 transition-colors">
-                        {p.title}
-                      </h3>
-                      <span className="hidden sm:inline-block px-2 py-0.5 text-[10px] font-mono rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
-                        {p.metrics}
-                      </span>
-                    </div>
-                    <p className="text-sm text-zinc-400 max-w-xl leading-relaxed">{p.tagline}</p>
-                    <div className="flex flex-wrap gap-1.5 pt-1">
-                      {p.stack.map((tech) => (
-                        <span
-                          key={tech}
-                          className="px-2.5 py-0.5 text-xs rounded-md bg-zinc-900 border border-zinc-800 text-zinc-400"
-                        >
-                          {tech}
+                <SpotlightCard>
+                  <div className="flex items-start justify-between">
+                    <div className="space-y-2.5">
+                      <div className="flex items-center gap-3">
+                        <span className="text-xs font-mono text-zinc-500">0{idx + 1}</span>
+                        <h3 className="text-lg font-semibold text-white hover:text-emerald-400 transition-colors">
+                          {p.title}
+                        </h3>
+                        <span className="hidden sm:inline-block px-2 py-0.5 text-[10px] font-mono rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+                          {p.metrics}
                         </span>
-                      ))}
+                      </div>
+                      <p className="text-sm text-zinc-400 max-w-xl leading-relaxed">{p.tagline}</p>
+                      <div className="flex flex-wrap gap-1.5 pt-1">
+                        {p.stack.map((tech) => (
+                          <span
+                            key={tech}
+                            className="px-2.5 py-0.5 text-xs rounded-md bg-zinc-900 border border-zinc-800 text-zinc-400"
+                          >
+                            {tech}
+                          </span>
+                        ))}
+                      </div>
                     </div>
+                    <a
+                      href={p.link}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="p-2.5 rounded-xl border border-zinc-800 bg-zinc-900 text-zinc-400 hover:text-white hover:border-zinc-600 transition-all shrink-0 ml-4"
+                    >
+                      <ExternalLink className="w-4 h-4" />
+                    </a>
                   </div>
-                  <a
-                    href={p.link}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="p-2.5 rounded-xl border border-zinc-800 bg-zinc-900 text-zinc-400 hover:text-white hover:border-zinc-600 transition-all"
-                  >
-                    <ExternalLink className="w-4 h-4" />
-                  </a>
-                </div>
+                </SpotlightCard>
               </motion.div>
             ))}
           </div>
@@ -320,9 +324,9 @@ export default function Home() {
           </h2>
           <TechMarquee items={marqueeSkills} />
 
-          {/* Categorized Bento */}
+          {/* Categorized Bento with Spotlight */}
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-2">
-            <div className="p-4 rounded-xl border border-zinc-800/80 bg-zinc-950/50 space-y-2">
+            <SpotlightCard className="p-4 space-y-2">
               <div className="flex items-center gap-2 text-zinc-200 text-sm font-semibold">
                 <Code2 className="w-4 h-4 text-emerald-400" />
                 Backend &amp; Languages
@@ -330,8 +334,8 @@ export default function Home() {
               <p className="text-xs text-zinc-400 leading-relaxed">
                 Core Java, Spring Boot, Hibernate, Python, RESTful APIs, Node.js, Microservices, OOP, Concurrency.
               </p>
-            </div>
-            <div className="p-4 rounded-xl border border-zinc-800/80 bg-zinc-950/50 space-y-2">
+            </SpotlightCard>
+            <SpotlightCard className="p-4 space-y-2">
               <div className="flex items-center gap-2 text-zinc-200 text-sm font-semibold">
                 <Cloud className="w-4 h-4 text-blue-400" />
                 Cloud &amp; Databases
@@ -339,8 +343,8 @@ export default function Home() {
               <p className="text-xs text-zinc-400 leading-relaxed">
                 Microsoft Azure (AZ-900), PostgreSQL, MongoDB, NoSQL, MySQL, Docker, Kubernetes, CI/CD, Maven, Linux.
               </p>
-            </div>
-            <div className="p-4 rounded-xl border border-zinc-800/80 bg-zinc-950/50 space-y-2">
+            </SpotlightCard>
+            <SpotlightCard className="p-4 space-y-2">
               <div className="flex items-center gap-2 text-zinc-200 text-sm font-semibold">
                 <Shield className="w-4 h-4 text-purple-400" />
                 Security &amp; Testing
@@ -348,13 +352,13 @@ export default function Home() {
               <p className="text-xs text-zinc-400 leading-relaxed">
                 Postman, JUnit, Wireshark, Nmap, Metasploit, Secure Coding, Agile &amp; Scrum Methodologies.
               </p>
-            </div>
+            </SpotlightCard>
           </div>
         </section>
 
         {/* Education & Certifications */}
         <section className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div className="p-6 rounded-2xl border border-zinc-800/80 bg-zinc-950/50 space-y-4">
+          <SpotlightCard className="space-y-4">
             <h3 className="text-lg font-semibold text-white flex items-center gap-2">
               <GraduationCap className="w-5 h-5 text-blue-400" />
               Education
@@ -369,9 +373,9 @@ export default function Home() {
                 <p className="text-xs text-zinc-400">Techno India Group (BIT), MAKAUT • 2016 — 2020</p>
               </div>
             </div>
-          </div>
+          </SpotlightCard>
 
-          <div className="p-6 rounded-2xl border border-zinc-800/80 bg-zinc-950/50 space-y-4">
+          <SpotlightCard className="space-y-4">
             <h3 className="text-lg font-semibold text-white flex items-center gap-2">
               <Award className="w-5 h-5 text-purple-400" />
               Certifications &amp; Training
@@ -386,7 +390,7 @@ export default function Home() {
                 <p className="text-xs text-zinc-400">CDAC Kolkata • Issued May 2021</p>
               </div>
             </div>
-          </div>
+          </SpotlightCard>
         </section>
 
         {/* Footer */}
@@ -404,7 +408,7 @@ export default function Home() {
       <div className="fixed bottom-6 right-6 z-40">
         <button
           onClick={() => setCmdOpen(true)}
-          className="flex items-center gap-2 px-3.5 py-2 rounded-full border border-zinc-800/90 bg-zinc-950/80 backdrop-blur-xl shadow-2xl text-xs text-zinc-400 hover:border-zinc-600 hover:text-white transition-all group"
+          className="flex items-center gap-2 px-3.5 py-2 rounded-full border border-zinc-800/90 bg-zinc-950/80 backdrop-blur-xl shadow-2xl text-xs text-zinc-400 hover:border-zinc-600 hover:text-white transition-all group cursor-pointer"
         >
           <Command className="w-3.5 h-3.5 text-zinc-500 group-hover:text-white transition-colors" />
           <span>Press</span>
@@ -449,7 +453,7 @@ export default function Home() {
                       <button
                         key={i}
                         onClick={cmd.action}
-                        className="w-full flex items-center justify-between px-3 py-2.5 rounded-xl hover:bg-zinc-900 text-left text-sm text-zinc-300 hover:text-white transition-all group"
+                        className="w-full flex items-center justify-between px-3 py-2.5 rounded-xl hover:bg-zinc-900 text-left text-sm text-zinc-300 hover:text-white transition-all group cursor-pointer"
                       >
                         <div className="flex items-center gap-2.5">
                           <Icon className="w-4 h-4 text-zinc-500 group-hover:text-emerald-400 transition-colors" />
