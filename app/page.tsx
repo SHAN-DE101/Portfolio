@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence, useScroll, useSpring } from "framer-motion";
 import {
   Mail,
   Clock,
@@ -20,10 +20,13 @@ import {
   Cloud,
   FileText,
   ArrowUpRight,
+  Send,
 } from "lucide-react";
 import TechMarquee from "@/components/Marquee";
 import SpotlightCard from "@/components/SpotlightCard";
 import TerminalModal from "@/components/TerminalModal";
+import CustomCursor from "@/components/CustomCursor";
+import ContactModal from "@/components/ContactModal";
 
 function GithubIcon({ className = "w-4 h-4" }: { className?: string }) {
   return (
@@ -50,8 +53,17 @@ export default function Home() {
   const [copied, setCopied] = useState(false);
   const [cmdOpen, setCmdOpen] = useState(false);
   const [terminalOpen, setTerminalOpen] = useState(false);
+  const [contactOpen, setContactOpen] = useState(false);
   const [searchFilter, setSearchFilter] = useState("");
   const [activeCategory, setActiveCategory] = useState<"ALL" | "BACKEND" | "AI_VISION">("ALL");
+
+  // Scroll Progress Bar
+  const { scrollYProgress } = useScroll();
+  const scaleX = useSpring(scrollYProgress, {
+    stiffness: 100,
+    damping: 30,
+    restDelta: 0.001,
+  });
 
   useEffect(() => {
     const updateTime = () => {
@@ -86,6 +98,7 @@ export default function Home() {
       if (e.key === "Escape") {
         setCmdOpen(false);
         setTerminalOpen(false);
+        setContactOpen(false);
       }
     };
     window.addEventListener("keydown", handleKeyDown);
@@ -158,6 +171,7 @@ export default function Home() {
   ];
 
   const commandItems = [
+    { label: "Send Direct Message (Modal)", action: () => { setCmdOpen(false); setContactOpen(true); }, icon: Send, hint: "Message" },
     { label: "View / Download Resume (PDF)", action: () => window.open("/resume.pdf", "_blank"), icon: FileText, hint: "PDF" },
     { label: "Launch Interactive Shell (`~`)", action: () => { setCmdOpen(false); setTerminalOpen(true); }, icon: Terminal, hint: "` key" },
     { label: "Copy Email Address", action: copyEmail, icon: Mail, hint: "deyshantanu101@gmail.com" },
@@ -175,6 +189,14 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-black text-zinc-100 selection:bg-white selection:text-black font-sans relative">
+      <CustomCursor />
+
+      {/* Top Scroll Indicator */}
+      <motion.div
+        className="fixed top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-emerald-500 via-teal-400 to-indigo-500 origin-left z-[100]"
+        style={{ scaleX }}
+      />
+
       <div className="absolute inset-0 bg-cyber-grid pointer-events-none opacity-35 z-0" />
 
       {/* Floating Pill Nav */}
@@ -184,6 +206,12 @@ export default function Home() {
           <a href="#projects" className="hover:text-white transition-colors">Projects</a>
           <a href="#experience" className="hover:text-white transition-colors">Experience</a>
           <a href="#skills" className="hover:text-white transition-colors">Skills</a>
+          <button
+            onClick={() => setContactOpen(true)}
+            className="hover:text-emerald-400 transition-colors"
+          >
+            Contact
+          </button>
           <a
             href="/resume.pdf"
             target="_blank"
@@ -243,11 +271,18 @@ export default function Home() {
           {/* Action Row */}
           <div className="flex flex-wrap items-center gap-3 pt-2">
             <button
-              onClick={copyEmail}
+              onClick={() => setContactOpen(true)}
               className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-white text-black text-sm font-semibold hover:bg-zinc-200 transition-all shadow-md active:scale-95 cursor-pointer"
             >
-              {copied ? <Check className="w-4 h-4 text-emerald-600" /> : <Mail className="w-4 h-4" />}
-              <span>{copied ? "Email Copied!" : "deyshantanu101@gmail.com"}</span>
+              <Send className="w-4 h-4" />
+              <span>Get in Touch</span>
+            </button>
+            <button
+              onClick={copyEmail}
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-xl border border-zinc-800 bg-zinc-900/60 text-zinc-300 text-sm hover:border-zinc-700 hover:text-white transition-all shadow-sm active:scale-95 cursor-pointer"
+            >
+              {copied ? <Check className="w-4 h-4 text-emerald-400" /> : <Mail className="w-4 h-4" />}
+              <span>{copied ? "Email Copied!" : "Copy Email"}</span>
             </button>
             <a
               href="/resume.pdf"
@@ -583,6 +618,9 @@ export default function Home() {
 
       {/* Terminal Shell Modal */}
       <TerminalModal isOpen={terminalOpen} onClose={() => setTerminalOpen(false)} />
+
+      {/* Quick Contact Modal */}
+      <ContactModal isOpen={contactOpen} onClose={() => setContactOpen(false)} />
     </div>
   );
 }
