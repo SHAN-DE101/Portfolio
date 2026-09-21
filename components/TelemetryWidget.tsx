@@ -10,6 +10,7 @@ export default function TelemetryWidget() {
   const [ping, setPing] = useState(24);
 
   useEffect(() => {
+    setSoundOn(sound.enabled);
     const handleScroll = () => setShowTop(window.scrollY > 400);
     window.addEventListener("scroll", handleScroll);
     const interval = setInterval(() => setPing(Math.floor(22 + Math.random() * 8)), 4000);
@@ -20,9 +21,8 @@ export default function TelemetryWidget() {
   }, []);
 
   const toggleSound = () => {
-    sound.enabled = !soundOn;
-    setSoundOn(!soundOn);
-    if (!soundOn) sound.playClick();
+    const newState = sound.toggle();
+    setSoundOn(newState);
   };
 
   const scrollToTop = () => {
@@ -43,9 +43,13 @@ export default function TelemetryWidget() {
       <button
         onClick={toggleSound}
         className="p-2 rounded-full border border-zinc-800/90 bg-zinc-950/80 backdrop-blur-xl text-zinc-400 hover:text-white hover:border-zinc-700 transition-all shadow-xl cursor-pointer"
-        title={soundOn ? "Mute audio fx" : "Enable audio fx"}
+        title={soundOn ? "Mute sound fx" : "Enable sound fx"}
       >
-        {soundOn ? <Volume2 className="w-3.5 h-3.5 text-emerald-400" /> : <VolumeX className="w-3.5 h-3.5 text-zinc-500" />}
+        {soundOn ? (
+          <Volume2 className="w-3.5 h-3.5 text-emerald-400" />
+        ) : (
+          <VolumeX className="w-3.5 h-3.5 text-zinc-500" />
+        )}
       </button>
 
       {showTop && (

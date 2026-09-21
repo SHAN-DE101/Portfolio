@@ -4,11 +4,34 @@ class SoundEffects {
   private ctx: AudioContext | null = null;
   public enabled: boolean = true;
 
+  constructor() {
+    if (typeof window !== "undefined") {
+      const saved = localStorage.getItem("audio_pref");
+      if (saved !== null) {
+        this.enabled = saved === "true";
+      }
+    }
+  }
+
   private init() {
     if (!this.ctx && typeof window !== "undefined") {
-      const AudioCtx = window.AudioContext || (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext;
+      const AudioCtx =
+        window.AudioContext ||
+        (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext;
       this.ctx = new AudioCtx();
     }
+    if (this.ctx && this.ctx.state === "suspended") {
+      this.ctx.resume();
+    }
+  }
+
+  toggle(): boolean {
+    this.enabled = !this.enabled;
+    if (typeof window !== "undefined") {
+      localStorage.setItem("audio_pref", String(this.enabled));
+    }
+    if (this.enabled) this.playClick();
+    return this.enabled;
   }
 
   playClick() {
