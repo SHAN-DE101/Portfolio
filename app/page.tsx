@@ -18,7 +18,6 @@ import {
   ArrowUpRight,
   Send,
   Calendar,
-  Layers,
   ChevronRight,
 } from "lucide-react";
 import TechMarquee from "@/components/Marquee";
@@ -71,7 +70,7 @@ export default function Home() {
   const [scheduleOpen, setScheduleOpen] = useState(false);
   const [selectedProject, setSelectedProject] = useState<ProjectDetail | null>(null);
   const [searchFilter, setSearchFilter] = useState("");
-  const [activeCategory, setActiveCategory] = useState<"ALL" | "BACKEND" | "AI_VISION">("ALL");
+  const [activeCategory, setActiveCategory] = useState<"ALL" | "BACKEND" | "AI_VISION" | "GATEWAY">("ALL");
 
   const { scrollYProgress } = useScroll();
   const scaleX = useSpring(scrollYProgress, {
@@ -145,7 +144,53 @@ export default function Home() {
     showToast("Recruiter LinkedIn introduction note copied!");
   };
 
-  const allProjects: Array<ProjectDetail & { categoryType: "BACKEND" | "AI_VISION" }> = [
+  const allProjects: Array<ProjectDetail & { categoryType: "BACKEND" | "AI_VISION" | "GATEWAY" }> = [
+    {
+      title: "Enterprise AI Token Management Gateway",
+      categoryType: "GATEWAY",
+      category: "AI Infrastructure / Security Proxy",
+      tagline:
+        "High-performance FastAPI reverse proxy enforcing atomic sliding-window token quotas, multi-model fallbacks, and resilient ClickHouse telemetry.",
+      problem:
+        "Direct multi-LLM integrations cause uncontrolled token spend, concurrency oversubscription (TOCTOU race conditions), and unhandled provider outages.",
+      architecture: [
+        "Asynchronous FastAPI reverse proxy routing OpenAI-compatible chat and completion payloads",
+        "Dual-axis RPM and TPM sliding-window rate limiting via Redis Lua scripts (EVALSHA)",
+        "Automated circuit breaker and fallback chains (e.g., GPT-4o -> Claude 3.5 Sonnet) on HTTP 429/5xx",
+        "Non-blocking async telemetry queue flushing batches into ClickHouse analytical store",
+      ],
+      metrics: [
+        "<= 15ms median routing overhead",
+        "0% quota oversubscription under heavy load",
+        "5,000+ concurrent requests/sec capacity",
+        "SHA-256 hashed virtual key authorization",
+      ],
+      stack: ["FastAPI", "Redis", "ClickHouse", "OpenTelemetry", "Docker"],
+      github: "https://ai-token-gateway.vercel.app/dashboard",
+    },
+    {
+      title: "E-Charge: Emergency EV & Fuel Delivery",
+      categoryType: "BACKEND",
+      category: "On-Demand Logistics & Geospatial App",
+      tagline:
+        "Serverless emergency mobile charging & fuel delivery platform matching stranded motorists with nearby mobile vans in real-time.",
+      problem:
+        "Highway service gaps and sudden battery depletion or fuel exhaustion require instantaneous spatial matching and compliant logistics.",
+      architecture: [
+        "Mobile-optimized React SPA hosted on Azure Static Web Apps edge nodes",
+        "Client-side Haversine spatial calculation and geohash pre-filtering",
+        "PESO-compliant digital safety verification gate before courier dispatch",
+        "Secure UPI intent checkout loop with out-of-band 4-digit PIN verification handshake",
+      ],
+      metrics: [
+        "Sub-second geodesic distance routing",
+        "Zero-idle-cost Azure Functions orchestration",
+        "Out-of-band PIN delivery confirmation locking",
+        "Real-time driver ETA tracking timeline",
+      ],
+      stack: ["React 18", "Azure Functions", "Cosmos DB", "Haversine Engine", "UPI API"],
+      github: "https://github.com/SHAN-DE101",
+    },
     {
       title: "Serverless Payment Gateway",
       categoryType: "BACKEND",
@@ -167,29 +212,6 @@ export default function Home() {
         "Azure Cloud auto-scaling active",
       ],
       stack: ["Java", "Spring Boot", "Azure Cloud", "REST APIs", "Maven"],
-      github: "https://github.com/SHAN-DE101",
-    },
-    {
-      title: "Financial Transaction System",
-      categoryType: "BACKEND",
-      category: "Fintech / Backend Services",
-      tagline:
-        "Engineered transactional services with NoSQL persistence layer, automated Postman validation suites, and rigorous data consistency models.",
-      problem:
-        "Financial records demand strict write consistency alongside flexible schema definitions for varied account statements.",
-      architecture: [
-        "Designed clean MVC REST endpoints validating transaction history requests",
-        "Configured NoSQL schema indexing for fast temporal record queries",
-        "Automated continuous integration testing suites via Postman & Maven",
-        "Implemented secure error handling preventing stack-trace information leakage",
-      ],
-      metrics: [
-        "100% endpoint test automation in Postman",
-        "High-throughput concurrent read optimization",
-        "Structured audit trails for transaction records",
-        "Git version-controlled CI/CD integration",
-      ],
-      stack: ["Spring Boot", "NoSQL", "Postman", "REST APIs", "Git"],
       github: "https://github.com/SHAN-DE101",
     },
     {
@@ -450,7 +472,7 @@ export default function Home() {
           <TechMarquee items={marqueeRow2} reverse={true} />
         </section>
 
-        {/* Featured Projects with Architecture Modal Trigger */}
+        {/* Featured Projects with Filter Tabs */}
         <section id="projects" className="space-y-6">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div>
@@ -463,7 +485,48 @@ export default function Home() {
               </p>
             </div>
 
-            ${targetTabs}
+            <div className="flex items-center gap-1.5 p-1 rounded-xl bg-zinc-900/80 border border-zinc-800 text-xs font-mono flex-wrap">
+              <button
+                onClick={() => { sound.playClick(); setActiveCategory("ALL"); }}
+                className={`px-3 py-1 rounded-lg transition-all cursor-pointer ${
+                  activeCategory === "ALL"
+                    ? "bg-white text-black font-semibold shadow-sm"
+                    : "text-zinc-400 hover:text-white"
+                }`}
+              >
+                All
+              </button>
+              <button
+                onClick={() => { sound.playClick(); setActiveCategory("BACKEND"); }}
+                className={`px-3 py-1 rounded-lg transition-all cursor-pointer ${
+                  activeCategory === "BACKEND"
+                    ? "bg-white text-black font-semibold shadow-sm"
+                    : "text-zinc-400 hover:text-white"
+                }`}
+              >
+                Backend
+              </button>
+              <button
+                onClick={() => { sound.playClick(); setActiveCategory("GATEWAY"); }}
+                className={`px-3 py-1 rounded-lg transition-all cursor-pointer ${
+                  activeCategory === "GATEWAY"
+                    ? "bg-white text-black font-semibold shadow-sm"
+                    : "text-zinc-400 hover:text-white"
+                }`}
+              >
+                AI Gateway
+              </button>
+              <button
+                onClick={() => { sound.playClick(); setActiveCategory("AI_VISION"); }}
+                className={`px-3 py-1 rounded-lg transition-all cursor-pointer ${
+                  activeCategory === "AI_VISION"
+                    ? "bg-white text-black font-semibold shadow-sm"
+                    : "text-zinc-400 hover:text-white"
+                }`}
+              >
+                AI / Vision
+              </button>
+            </div>
           </div>
 
           <div className="grid grid-cols-1 gap-4">
@@ -524,7 +587,7 @@ export default function Home() {
         <section id="telemetry" className="space-y-4">
           <div className="flex items-center justify-between">
             <h2 className="text-xs uppercase tracking-widest text-zinc-500 font-mono">
-              Live Edge Probes &amp; Database Benchmarks
+              Live Edge Probes &amp; Security Audits
             </h2>
             <span className="text-[10px] font-mono text-emerald-400">EDGE RUNTIME ACTIVE</span>
           </div>
