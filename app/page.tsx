@@ -9,6 +9,7 @@ import {
   Terminal,
   ExternalLink,
 } from "lucide-react";
+import TechMarquee from "@/components/Marquee";
 
 function GithubIcon({ className = "w-4 h-4" }: { className?: string }) {
   return (
@@ -100,7 +101,10 @@ export default function Home() {
   ];
 
   return (
-    <div className="min-h-screen bg-black text-zinc-100 selection:bg-white selection:text-black font-sans">
+    <div className="min-h-screen bg-black text-zinc-100 selection:bg-white selection:text-black font-sans relative">
+      {/* Background Cyber Grid */}
+      <div className="absolute inset-0 bg-cyber-grid pointer-events-none opacity-40 z-0" />
+
       {/* Sticky Pill Header */}
       <header className="fixed top-6 left-0 right-0 z-50 flex justify-center px-4">
         <nav className="flex items-center gap-6 px-6 py-2.5 rounded-full border border-zinc-800/80 bg-zinc-950/70 backdrop-blur-xl shadow-2xl text-xs font-medium text-zinc-400">
@@ -126,7 +130,7 @@ export default function Home() {
       </header>
 
       {/* Main Container */}
-      <main className="max-w-4xl mx-auto px-6 pt-36 pb-24 space-y-24">
+      <main className="relative z-10 max-w-4xl mx-auto px-6 pt-36 pb-24 space-y-24">
         {/* Hero Section */}
         <section id="about" className="space-y-6">
           {/* Live Status Pill */}
@@ -243,22 +247,13 @@ export default function Home() {
           </div>
         </section>
 
-        {/* Skills Bento */}
+        {/* Skills Marquee Section */}
         <section id="skills" className="space-y-6">
           <h2 className="text-2xl font-bold tracking-tight text-white flex items-center gap-2">
             <Terminal className="w-5 h-5 text-indigo-400" />
             Technologies &amp; Arsenal
           </h2>
-          <div className="flex flex-wrap gap-2.5">
-            {skills.map((skill) => (
-              <span
-                key={skill}
-                className="px-4 py-2 rounded-xl text-sm font-medium border border-zinc-800/80 bg-zinc-950/60 text-zinc-300 hover:border-zinc-600 hover:text-white transition-all shadow-sm"
-              >
-                {skill}
-              </span>
-            ))}
-          </div>
+          <TechMarquee items={skills} />
         </section>
 
         {/* Footer */}
