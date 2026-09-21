@@ -412,8 +412,9 @@ footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;
       metric:'Sub-second geodesic distance routing',
       desc:'Serverless emergency mobile charging and fuel delivery platform that matches stranded motorists with nearby mobile vans in real time using Haversine calculation.',
       stack:['React 18','Azure Functions','Cosmos DB','Haversine Engine','UPI API'],
-      link:'e-charge.html',
-      linkText:'🚀 Launch Live E-Charge Dashboard ↗'
+      liveUrl:'/e-charge.html',
+      link:'https://github.com/SHAN-DE101',
+      linkText:'View Source on GitHub ↗'
     }],
     backend:[{
       kind:'Backend / Cloud Architecture',
@@ -449,7 +450,13 @@ footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;
   }).join('');
 
   function projectCard(p){
-    var cta = p.link ? '<a class="card-cta" href="'+p.link+'" target="_blank" rel="noopener">'+p.linkText+'</a>' : '';
+    var cta = "";
+    if (p.liveUrl) {
+      cta += '<a class="card-cta" href="' + p.liveUrl + '" target="_blank" rel="noopener" style="background:#5b5bff;margin-right:10px;">🚀 Live Dashboard ↗</a>';
+    }
+    if (p.link) {
+      cta += '<a class="card-cta" href="' + p.link + '" target="_blank" rel="noopener" style="background:#2a2a2f;">' + (p.linkText || "View Source on GitHub ↗") + '</a>';
+    }
     return '<article class="card"><p class="kind">'+p.kind+'</p><h3>'+p.title+'</h3><p class="desc">'+p.desc+'</p>' +
       '<p class="metric"><span class="dot"></span>'+p.metric+'</p>' +
       '<div class="chips">'+p.stack.map(function(s){return '<span class="chip">'+s+'</span>';}).join('')+'</div>' +
