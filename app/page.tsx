@@ -29,6 +29,10 @@ import ContactModal from "@/components/ContactModal";
 import TelemetryWidget from "@/components/TelemetryWidget";
 import GithubActivity from "@/components/GithubActivity";
 import ArchitectureSnippet from "@/components/ArchitectureSnippet";
+import ApiPlayground from "@/components/ApiPlayground";
+import SkillRadar from "@/components/SkillRadar";
+import RotatingBadge from "@/components/RotatingBadge";
+import DevSetupBento from "@/components/DevSetupBento";
 import { sound } from "@/lib/sounds";
 
 function GithubIcon({ className = "w-4 h-4" }: { className?: string }) {
@@ -210,6 +214,7 @@ export default function Home() {
         <nav className="flex items-center gap-5 sm:gap-6 px-6 py-2.5 rounded-full border border-zinc-800/80 bg-zinc-950/70 backdrop-blur-xl shadow-2xl text-xs font-medium text-zinc-400">
           <a href="#about" onClick={() => sound.playClick()} className="hover:text-white transition-colors">About</a>
           <a href="#projects" onClick={() => sound.playClick()} className="hover:text-white transition-colors">Projects</a>
+          <a href="#telemetry" onClick={() => sound.playClick()} className="hover:text-white transition-colors">Telemetry</a>
           <a href="#experience" onClick={() => sound.playClick()} className="hover:text-white transition-colors">Experience</a>
           <a href="#skills" onClick={() => sound.playClick()} className="hover:text-white transition-colors">Skills</a>
           <button
@@ -251,11 +256,13 @@ export default function Home() {
       <main className="relative z-10 max-w-4xl mx-auto px-6 pt-36 pb-32 space-y-24">
         {/* Hero Section */}
         <section id="about" className="space-y-6">
-          <div className="inline-flex items-center gap-2.5 px-3.5 py-1.5 rounded-full border border-emerald-500/20 bg-emerald-500/10 text-emerald-400 text-xs tracking-wide">
-            <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-            <span>Available for SDE / Backend Roles</span>
-            <span className="text-zinc-500">•</span>
-            <span className="flex items-center gap-1 text-zinc-400">
+          <div className="flex flex-wrap items-center gap-2.5">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-emerald-500/20 bg-emerald-500/10 text-emerald-400 text-xs tracking-wide">
+              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+              <span>Available for SDE / Backend Roles</span>
+            </div>
+            <RotatingBadge />
+            <span className="hidden sm:flex items-center gap-1 text-xs text-zinc-500 font-mono">
               <Clock className="w-3 h-3" />
               {time ? `${time} IST` : "Kolkata, IN"}
             </span>
@@ -464,10 +471,22 @@ export default function Home() {
           </div>
         </section>
 
-        {/* Live GitHub & Clean Architecture Blueprint Grid */}
-        <section className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <GithubActivity />
-          <ArchitectureSnippet />
+        {/* Live Systems & Telemetry Section */}
+        <section id="telemetry" className="space-y-4">
+          <div className="flex items-center justify-between">
+            <h2 className="text-xs uppercase tracking-widest text-zinc-500 font-mono">
+              Live Edge Probes &amp; Telemetry
+            </h2>
+            <span className="text-[10px] font-mono text-emerald-400">EDGE RUNTIME ACTIVE</span>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <ApiPlayground />
+            <SkillRadar />
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <GithubActivity />
+            <ArchitectureSnippet />
+          </div>
         </section>
 
         {/* Experience Section */}
@@ -499,6 +518,17 @@ export default function Home() {
               <li>Supported debugging, profiling, and testing to enhance backend throughput and reliability.</li>
             </ul>
           </SpotlightCard>
+        </section>
+
+        {/* Dev Environment & Creed Bento (Vishal Style) */}
+        <section className="space-y-4">
+          <div className="flex items-center justify-between">
+            <h2 className="text-xs uppercase tracking-widest text-zinc-500 font-mono">
+              Engineering Setup &amp; Philosophy
+            </h2>
+            <span className="text-[10px] font-mono text-zinc-500">CULTURE</span>
+          </div>
+          <DevSetupBento />
         </section>
 
         {/* Education & Credentials */}
