@@ -32,6 +32,7 @@ import ApiPlayground from "@/components/ApiPlayground";
 import SkillRadar from "@/components/SkillRadar";
 import RotatingBadge from "@/components/RotatingBadge";
 import DevSetupBento from "@/components/DevSetupBento";
+import NetworkCanvas from "@/components/NetworkCanvas";
 import { sound } from "@/lib/sounds";
 
 function GithubIcon({ className = "w-4 h-4" }: { className?: string }) {
@@ -201,6 +202,7 @@ export default function Home() {
   return (
     <div className="min-h-screen bg-black text-zinc-100 selection:bg-white selection:text-black font-sans relative">
       <CustomCursor />
+      <NetworkCanvas />
       <TelemetryWidget />
 
       {/* Top Scroll Indicator */}
