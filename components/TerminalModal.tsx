@@ -1,14 +1,14 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
-import { Terminal, X, Minimize2 } from "lucide-react";
+import { Terminal, X } from "lucide-react";
 
-interface TerminalModalProps {
-  isOpen: boolean;
-  onClose: () => void;
+export interface TerminalModalProps {
+  isOpen?: boolean;
+  onClose?: () => void;
 }
 
-export default function TerminalModal({ isOpen, onClose }: TerminalModalProps) {
+export default function TerminalModal({ isOpen = false, onClose = () => {} }: TerminalModalProps) {
   const [input, setInput] = useState("");
   const [history, setHistory] = useState<Array<{ command: string; output: string }>>([
     {
@@ -108,7 +108,6 @@ export default function TerminalModal({ isOpen, onClose }: TerminalModalProps) {
             </div>
           ))}
 
-          {/* Prompt line */}
           <form onSubmit={handleCommand} className="flex items-center gap-2 text-emerald-400 pt-1">
             <span>➜</span>
             <span className="text-zinc-500">~</span>

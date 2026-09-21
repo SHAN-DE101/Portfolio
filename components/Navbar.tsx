@@ -1,66 +1,60 @@
-'use client';
+"use client";
 
-import { useState, useEffect } from 'react';
-import { Terminal, FileDown } from 'lucide-react';
-import ContactModal from './ContactModal';
-import TerminalModal from './TerminalModal';
+import { useState } from "react";
+import { Terminal } from "lucide-react";
+import TerminalModal from "./TerminalModal";
+
+function GithubIcon({ className = "w-4 h-4" }: { className?: string }) {
+  return (
+    <svg className={`${className} fill-current`} viewBox="0 0 24 24" aria-hidden="true">
+      <path
+        fillRule="evenodd"
+        clipRule="evenodd"
+        d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.53 1.032 1.53 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z"
+      />
+    </svg>
+  );
+}
 
 export default function Navbar() {
-  const [scrolled, setScrolled] = useState(false);
-
-  useEffect(() => {
-    const handleScroll = () => {
-      setScrolled(window.scrollY > 20);
-    };
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
+  const [terminalOpen, setTerminalOpen] = useState(false);
 
   return (
-    <header className="fixed top-0 left-0 right-0 z-50 flex justify-center p-4">
-      <nav
-        className={`flex items-center gap-2 sm:gap-4 px-4 py-2.5 rounded-full border transition-all duration-300 backdrop-blur-md ${
-          scrolled
-            ? 'bg-slate-950/80 border-slate-700/60 shadow-2xl shadow-teal-500/10'
-            : 'bg-slate-900/50 border-slate-800/80'
-        }`}
-      >
-        <a href="#" className="flex items-center gap-2 text-slate-100 font-mono text-xs font-semibold px-2">
-          <Terminal className="w-4 h-4 text-teal-400" />
-          <span className="tracking-tight">shantanu.dey</span>
-        </a>
-
-        <div className="h-4 w-[1px] bg-slate-800" />
-
-        <div className="flex items-center gap-1 text-xs font-mono text-slate-400">
-          <a href="#about" className="px-2.5 py-1 rounded-full hover:text-teal-300 hover:bg-slate-800/60 transition">
-            // about
+    <>
+      <header className="fixed top-6 left-0 right-0 z-50 flex justify-center px-4">
+        <nav className="flex items-center gap-6 px-6 py-2.5 rounded-full border border-zinc-800/80 bg-zinc-950/70 backdrop-blur-xl shadow-2xl text-xs font-medium text-zinc-400">
+          <a href="#about" className="hover:text-white transition-colors">
+            About
           </a>
-          <a href="#projects" className="px-2.5 py-1 rounded-full hover:text-teal-300 hover:bg-slate-800/60 transition">
-            // projects
+          <a href="#experience" className="hover:text-white transition-colors">
+            Experience
           </a>
-          <a href="#experience" className="px-2.5 py-1 rounded-full hover:text-teal-300 hover:bg-slate-800/60 transition">
-            // work
+          <a href="#projects" className="hover:text-white transition-colors">
+            Projects
           </a>
-          <a href="#skills" className="px-2.5 py-1 rounded-full hover:text-teal-300 hover:bg-slate-800/60 transition">
-            // stack
+          <a href="#skills" className="hover:text-white transition-colors">
+            Skills
           </a>
-        </div>
-
-        <div className="h-4 w-[1px] bg-slate-800 hidden sm:block" />
-
-        <div className="flex items-center gap-2">
-          <TerminalModal />
-          <a
-            href="/ShantanuDey_Resume.pdf"
-            download
-            className="hidden sm:flex items-center gap-1.5 text-xs font-mono px-3 py-1 rounded-full border border-slate-700 text-slate-300 hover:bg-slate-800 transition"
+          <button
+            onClick={() => setTerminalOpen(true)}
+            className="flex items-center gap-1 hover:text-emerald-400 transition-colors"
           >
-            <FileDown className="w-3.5 h-3.5" /> CV
+            <Terminal className="w-3.5 h-3.5" />
+            <span className="hidden sm:inline">CLI</span>
+          </button>
+          <a
+            href="https://github.com/SHAN-DE101"
+            target="_blank"
+            rel="noreferrer"
+            className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-zinc-800/80 text-zinc-200 hover:bg-white hover:text-black transition-all"
+          >
+            <GithubIcon className="w-3.5 h-3.5" />
+            <span>GitHub</span>
           </a>
-          <ContactModal />
-        </div>
-      </nav>
-    </header>
+        </nav>
+      </header>
+
+      <TerminalModal isOpen={terminalOpen} onClose={() => setTerminalOpen(false)} />
+    </>
   );
 }
