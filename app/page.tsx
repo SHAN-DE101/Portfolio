@@ -18,6 +18,8 @@ import {
   ArrowUpRight,
   Send,
   Calendar,
+  Layers,
+  ChevronRight,
 } from "lucide-react";
 import TechMarquee from "@/components/Marquee";
 import SpotlightCard from "@/components/SpotlightCard";
@@ -33,6 +35,7 @@ import SkillRadar from "@/components/SkillRadar";
 import RotatingBadge from "@/components/RotatingBadge";
 import DevSetupBento from "@/components/DevSetupBento";
 import NetworkCanvas from "@/components/NetworkCanvas";
+import ProjectDetailModal, { ProjectDetail } from "@/components/ProjectDetailModal";
 import { sound } from "@/lib/sounds";
 
 function GithubIcon({ className = "w-4 h-4" }: { className?: string }) {
@@ -62,6 +65,7 @@ export default function Home() {
   const [terminalOpen, setTerminalOpen] = useState(false);
   const [contactOpen, setContactOpen] = useState(false);
   const [scheduleOpen, setScheduleOpen] = useState(false);
+  const [selectedProject, setSelectedProject] = useState<ProjectDetail | null>(null);
   const [searchFilter, setSearchFilter] = useState("");
   const [activeCategory, setActiveCategory] = useState<"ALL" | "BACKEND" | "AI_VISION">("ALL");
 
@@ -109,6 +113,7 @@ export default function Home() {
         setTerminalOpen(false);
         setContactOpen(false);
         setScheduleOpen(false);
+        setSelectedProject(null);
       }
     };
     window.addEventListener("keydown", handleKeyDown);
@@ -122,36 +127,84 @@ export default function Home() {
     setTimeout(() => setCopied(false), 2000);
   };
 
-  const allProjects = [
+  const copyRecruiterNote = () => {
+    const note =
+      "Hi Shantanu, I came across your portfolio and was impressed by your backend experience at Persistent Systems and M.Tech in Cyber Security. Would love to connect regarding software engineering roles.";
+    navigator.clipboard.writeText(note);
+    sound.playSuccess();
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
+
+  const allProjects: Array<ProjectDetail & { categoryType: "BACKEND" | "AI_VISION" }> = [
     {
       title: "Serverless Payment Gateway",
       categoryType: "BACKEND",
+      category: "Backend / Cloud Architecture",
       tagline:
         "High-reliability backend system on Azure Cloud handling transactional integrity, secure tokens, and low-latency REST endpoints.",
+      problem:
+        "Traditional monolithic payment flows introduce latency spikes and single points of failure during burst transaction loads.",
+      architecture: [
+        "Constructed event-driven Azure Function triggers for payment authorization",
+        "Enforced idempotency keys to prevent duplicate transaction debiting",
+        "Applied cryptographic tokenization to isolate credit card payloads",
+        "Maintained dependency integrity via automated Maven build profiles",
+      ],
+      metrics: [
+        "Sub-100ms API response latency",
+        "Zero data-loss transactional integrity",
+        "Postman Newman automated regression tests",
+        "Azure Cloud auto-scaling active",
+      ],
       stack: ["Java", "Spring Boot", "Azure Cloud", "REST APIs", "Maven"],
-      category: "Backend / Cloud",
-      metrics: "Sub-100ms • Zero data loss",
-      link: "https://github.com/SHAN-DE101",
+      github: "https://github.com/SHAN-DE101",
     },
     {
       title: "Financial Transaction System",
       categoryType: "BACKEND",
+      category: "Fintech / Backend Services",
       tagline:
         "Engineered transactional services with NoSQL persistence layer, automated Postman validation suites, and rigorous data consistency models.",
+      problem:
+        "Financial records demand strict write consistency alongside flexible schema definitions for varied account statements.",
+      architecture: [
+        "Designed clean MVC REST endpoints validating transaction history requests",
+        "Configured NoSQL schema indexing for fast temporal record queries",
+        "Automated continuous integration testing suites via Postman & Maven",
+        "Implemented secure error handling preventing stack-trace information leakage",
+      ],
+      metrics: [
+        "100% endpoint test automation in Postman",
+        "High-throughput concurrent read optimization",
+        "Structured audit trails for transaction records",
+        "Git version-controlled CI/CD integration",
+      ],
       stack: ["Spring Boot", "NoSQL", "Postman", "REST APIs", "Git"],
-      category: "Fintech / Backend",
-      metrics: "Automated test coverage",
-      link: "https://github.com/SHAN-DE101",
+      github: "https://github.com/SHAN-DE101",
     },
     {
       title: "Real-Time Object Detection Engine",
       categoryType: "AI_VISION",
+      category: "Computer Vision / AI Pipeline",
       tagline:
         "Computer vision image and live video classification pipeline utilizing AdaBoost algorithm and HAAR Cascade models for ultra-fast inference.",
+      problem:
+        "Deep neural networks often exceed compute limits on edge devices, requiring lightweight feature cascades for real-time video feeds.",
+      architecture: [
+        "Trained cascaded classifiers leveraging integral images for rapid feature evaluation",
+        "Utilized AdaBoost learning to discard non-object regions early in the pipeline",
+        "Developed Python OpenCV ingestion modules streaming live webcam input",
+        "Benchmarked false-positive rates across varying illumination scenes",
+      ],
+      metrics: [
+        "Real-time video frame processing (30+ FPS)",
+        "Low memory footprint suitable for edge systems",
+        "Robust multi-scale object localization",
+        "OpenCV Python vectorized execution",
+      ],
       stack: ["Python", "OpenCV", "AdaBoost", "HAAR Cascades"],
-      category: "Computer Vision / AI",
-      metrics: "Live video stream processing",
-      link: "https://github.com/SHAN-DE101",
+      github: "https://github.com/SHAN-DE101",
     },
   ];
 
@@ -183,14 +236,13 @@ export default function Home() {
 
   const commandItems = [
     { label: "Book 15-min Technical Chat", action: () => { sound.playClick(); setCmdOpen(false); setScheduleOpen(true); }, icon: Calendar, hint: "Meet" },
+    { label: "Copy Recruiter Connection Note", action: () => { setCmdOpen(false); copyRecruiterNote(); }, icon: Check, hint: "LinkedIn Note" },
     { label: "Send Direct Message (Modal)", action: () => { sound.playClick(); setCmdOpen(false); setContactOpen(true); }, icon: Send, hint: "Message" },
     { label: "View / Download Resume (PDF)", action: () => { sound.playClick(); window.open("/resume.pdf", "_blank"); }, icon: FileText, hint: "PDF" },
     { label: "Launch Interactive Shell (`~`)", action: () => { sound.playClick(); setCmdOpen(false); setTerminalOpen(true); }, icon: Terminal, hint: "` key" },
     { label: "Copy Email Address", action: copyEmail, icon: Mail, hint: "deyshantanu101@gmail.com" },
     { label: "View GitHub Profile", action: () => { sound.playClick(); window.open("https://github.com/SHAN-DE101", "_blank"); }, icon: GithubIcon, hint: "SHAN-DE101" },
     { label: "View LinkedIn", action: () => { sound.playClick(); window.open("https://www.linkedin.com/in/shantanu-dey-7724571b2/", "_blank"); }, icon: LinkedinIcon, hint: "Connect" },
-    { label: "Jump to Projects", action: () => { sound.playClick(); window.location.href = "#projects"; setCmdOpen(false); }, icon: Sparkles, hint: "#projects" },
-    { label: "Jump to Experience", action: () => { sound.playClick(); window.location.href = "#experience"; setCmdOpen(false); }, icon: Briefcase, hint: "#experience" },
   ];
 
   const filteredCommands = commandItems.filter(
@@ -388,7 +440,7 @@ export default function Home() {
           <TechMarquee items={marqueeRow2} reverse={true} />
         </section>
 
-        {/* Featured Projects with Filter Tabs */}
+        {/* Featured Projects with Architecture Modal Trigger */}
         <section id="projects" className="space-y-6">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div>
@@ -396,7 +448,9 @@ export default function Home() {
                 <Sparkles className="w-5 h-5 text-amber-400" />
                 Featured Works
               </h2>
-              <p className="text-xs text-zinc-500 pt-1">Production-ready backend &amp; intelligence pipelines</p>
+              <p className="text-xs text-zinc-500 pt-1">
+                Click any project card to inspect system architecture and production metrics
+              </p>
             </div>
 
             <div className="flex items-center gap-1.5 p-1 rounded-xl bg-zinc-900/80 border border-zinc-800 text-xs font-mono">
@@ -442,20 +496,26 @@ export default function Home() {
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -12 }}
                   transition={{ duration: 0.2, delay: idx * 0.05 }}
+                  onClick={() => {
+                    sound.playClick();
+                    setSelectedProject(p);
+                  }}
+                  className="cursor-pointer group"
                 >
                   <SpotlightCard>
                     <div className="flex items-start justify-between">
                       <div className="space-y-2.5">
                         <div className="flex flex-wrap items-center gap-3">
                           <span className="text-xs font-mono text-zinc-500">0{idx + 1}</span>
-                          <h3 className="text-lg font-semibold text-white hover:text-emerald-400 transition-colors">
+                          <h3 className="text-lg font-semibold text-white group-hover:text-emerald-400 transition-colors flex items-center gap-1.5">
                             {p.title}
+                            <ChevronRight className="w-4 h-4 opacity-0 group-hover:opacity-100 group-hover:translate-x-1 transition-all text-emerald-400" />
                           </h3>
                           <span className="text-xs font-mono text-zinc-400 border-l border-zinc-800 pl-2.5">
                             {p.category}
                           </span>
                           <span className="hidden sm:inline-block px-2 py-0.5 text-[10px] font-mono rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
-                            {p.metrics}
+                            {p.metrics[0]}
                           </span>
                         </div>
                         <p className="text-sm text-zinc-400 max-w-xl leading-relaxed">{p.tagline}</p>
@@ -470,15 +530,9 @@ export default function Home() {
                           ))}
                         </div>
                       </div>
-                      <a
-                        href={p.link}
-                        target="_blank"
-                        rel="noreferrer"
-                        onClick={() => sound.playClick()}
-                        className="p-2.5 rounded-xl border border-zinc-800 bg-zinc-900 text-zinc-400 hover:text-white hover:border-zinc-600 transition-all shrink-0 ml-4"
-                      >
+                      <span className="p-2.5 rounded-xl border border-zinc-800 bg-zinc-900 text-zinc-400 group-hover:text-white group-hover:border-zinc-600 transition-all shrink-0 ml-4">
                         <ArrowUpRight className="w-4 h-4" />
-                      </a>
+                      </span>
                     </div>
                   </SpotlightCard>
                 </motion.div>
@@ -593,6 +647,13 @@ export default function Home() {
             <span>© {new Date().getFullYear()} Shantanu Dey</span>
           </div>
           <div className="flex items-center gap-4">
+            <button
+              onClick={copyRecruiterNote}
+              className="text-zinc-400 hover:text-emerald-400 transition-colors cursor-pointer"
+            >
+              Copy Recruiter Note
+            </button>
+            <span>•</span>
             <a href="https://github.com/SHAN-DE101" target="_blank" rel="noreferrer" onClick={() => sound.playClick()} className="hover:text-zinc-300 transition-colors">GitHub</a>
             <span>•</span>
             <a href="https://www.linkedin.com/in/shantanu-dey-7724571b2/" target="_blank" rel="noreferrer" onClick={() => sound.playClick()} className="hover:text-zinc-300 transition-colors">LinkedIn</a>
@@ -688,6 +749,9 @@ export default function Home() {
 
       {/* Quick Schedule Modal */}
       <ScheduleModal isOpen={scheduleOpen} onClose={() => setScheduleOpen(false)} />
+
+      {/* Project Detail Architecture Modal */}
+      <ProjectDetailModal project={selectedProject} onClose={() => setSelectedProject(null)} />
     </div>
   );
 }
