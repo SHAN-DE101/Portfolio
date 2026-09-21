@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Terminal, Copy, Check, Code, ShieldCheck } from "lucide-react";
+import { Copy, Check, Code } from "lucide-react";
 import SpotlightCard from "./SpotlightCard";
 import { sound } from "@/lib/sounds";
 

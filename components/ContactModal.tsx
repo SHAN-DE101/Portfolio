@@ -1,8 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import { X, Send, Mail, Check, Sparkles } from "lucide-react";
+import { motion } from "framer-motion";
+import { X, Send, Mail, Check } from "lucide-react";
 
 export default function ContactModal({
   isOpen,
@@ -18,7 +18,6 @@ export default function ContactModal({
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    // Pre-fill a mailto link directly so it's 100% functional with zero third-party backend keys
     const subject = encodeURIComponent(`Inquiry from ${name} via Portfolio`);
     const body = encodeURIComponent(`Hi Shantanu,\n\n${message}\n\nFrom: ${name} (${email})`);
     window.location.href = `mailto:deyshantanu101@gmail.com?subject=${subject}&body=${body}`;
@@ -51,7 +50,7 @@ export default function ContactModal({
           </div>
           <button
             onClick={onClose}
-            className="p-1 rounded-lg text-zinc-500 hover:text-white transition-colors"
+            className="p-1 rounded-lg text-zinc-500 hover:text-white transition-colors cursor-pointer"
           >
             <X className="w-4 h-4" />
           </button>
@@ -94,7 +93,7 @@ export default function ContactModal({
               <textarea
                 required
                 rows={3}
-                placeholder="Hey Shantanu, I saw your work on payment gateways and wanted to discuss an opportunity..."
+                placeholder="Hey Shantanu, I'd like to discuss an opportunity..."
                 value={message}
                 onChange={(e) => setMessage(e.target.value)}
                 className="w-full px-3 py-2 rounded-xl border border-zinc-800 bg-zinc-900/60 text-white placeholder-zinc-500 focus:outline-none focus:border-emerald-500/80 transition-colors resize-none"

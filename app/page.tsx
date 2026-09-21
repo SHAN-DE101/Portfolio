@@ -14,18 +14,17 @@ import {
   Command,
   Search,
   X,
-  Code2,
-  Shield,
-  Cloud,
   FileText,
   ArrowUpRight,
   Send,
+  Calendar,
 } from "lucide-react";
 import TechMarquee from "@/components/Marquee";
 import SpotlightCard from "@/components/SpotlightCard";
 import TerminalModal from "@/components/TerminalModal";
 import CustomCursor from "@/components/CustomCursor";
 import ContactModal from "@/components/ContactModal";
+import ScheduleModal from "@/components/ScheduleModal";
 import TelemetryWidget from "@/components/TelemetryWidget";
 import GithubActivity from "@/components/GithubActivity";
 import ArchitectureSnippet from "@/components/ArchitectureSnippet";
@@ -61,6 +60,7 @@ export default function Home() {
   const [cmdOpen, setCmdOpen] = useState(false);
   const [terminalOpen, setTerminalOpen] = useState(false);
   const [contactOpen, setContactOpen] = useState(false);
+  const [scheduleOpen, setScheduleOpen] = useState(false);
   const [searchFilter, setSearchFilter] = useState("");
   const [activeCategory, setActiveCategory] = useState<"ALL" | "BACKEND" | "AI_VISION">("ALL");
 
@@ -107,6 +107,7 @@ export default function Home() {
         setCmdOpen(false);
         setTerminalOpen(false);
         setContactOpen(false);
+        setScheduleOpen(false);
       }
     };
     window.addEventListener("keydown", handleKeyDown);
@@ -180,6 +181,7 @@ export default function Home() {
   ];
 
   const commandItems = [
+    { label: "Book 15-min Technical Chat", action: () => { sound.playClick(); setCmdOpen(false); setScheduleOpen(true); }, icon: Calendar, hint: "Meet" },
     { label: "Send Direct Message (Modal)", action: () => { sound.playClick(); setCmdOpen(false); setContactOpen(true); }, icon: Send, hint: "Message" },
     { label: "View / Download Resume (PDF)", action: () => { sound.playClick(); window.open("/resume.pdf", "_blank"); }, icon: FileText, hint: "PDF" },
     { label: "Launch Interactive Shell (`~`)", action: () => { sound.playClick(); setCmdOpen(false); setTerminalOpen(true); }, icon: Terminal, hint: "` key" },
@@ -211,12 +213,18 @@ export default function Home() {
 
       {/* Floating Pill Nav */}
       <header className="fixed top-6 left-0 right-0 z-50 flex justify-center px-4">
-        <nav className="flex items-center gap-5 sm:gap-6 px-6 py-2.5 rounded-full border border-zinc-800/80 bg-zinc-950/70 backdrop-blur-xl shadow-2xl text-xs font-medium text-zinc-400">
+        <nav className="flex items-center gap-4 sm:gap-6 px-6 py-2.5 rounded-full border border-zinc-800/80 bg-zinc-950/70 backdrop-blur-xl shadow-2xl text-xs font-medium text-zinc-400">
           <a href="#about" onClick={() => sound.playClick()} className="hover:text-white transition-colors">About</a>
           <a href="#projects" onClick={() => sound.playClick()} className="hover:text-white transition-colors">Projects</a>
           <a href="#telemetry" onClick={() => sound.playClick()} className="hover:text-white transition-colors">Telemetry</a>
           <a href="#experience" onClick={() => sound.playClick()} className="hover:text-white transition-colors">Experience</a>
           <a href="#skills" onClick={() => sound.playClick()} className="hover:text-white transition-colors">Skills</a>
+          <button
+            onClick={() => { sound.playClick(); setScheduleOpen(true); }}
+            className="hover:text-emerald-400 transition-colors cursor-pointer hidden sm:inline"
+          >
+            Meet
+          </button>
           <button
             onClick={() => { sound.playClick(); setContactOpen(true); }}
             className="hover:text-emerald-400 transition-colors cursor-pointer"
@@ -286,8 +294,15 @@ export default function Home() {
           {/* Action Row */}
           <div className="flex flex-wrap items-center gap-3 pt-2">
             <button
-              onClick={() => { sound.playClick(); setContactOpen(true); }}
+              onClick={() => { sound.playClick(); setScheduleOpen(true); }}
               className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-white text-black text-sm font-semibold hover:bg-zinc-200 transition-all shadow-md active:scale-95 cursor-pointer"
+            >
+              <Calendar className="w-4 h-4 text-emerald-600" />
+              <span>Book 15-min Chat</span>
+            </button>
+            <button
+              onClick={() => { sound.playClick(); setContactOpen(true); }}
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-xl border border-zinc-800 bg-zinc-900/60 text-zinc-200 text-sm hover:border-zinc-700 hover:text-white transition-all shadow-sm active:scale-95 cursor-pointer"
             >
               <Send className="w-4 h-4" />
               <span>Get in Touch</span>
@@ -382,7 +397,6 @@ export default function Home() {
               <p className="text-xs text-zinc-500 pt-1">Production-ready backend &amp; intelligence pipelines</p>
             </div>
 
-            {/* Filter Tabs */}
             <div className="flex items-center gap-1.5 p-1 rounded-xl bg-zinc-900/80 border border-zinc-800 text-xs font-mono">
               <button
                 onClick={() => { sound.playClick(); setActiveCategory("ALL"); }}
@@ -520,7 +534,7 @@ export default function Home() {
           </SpotlightCard>
         </section>
 
-        {/* Dev Environment & Creed Bento (Vishal Style) */}
+        {/* Dev Environment & Creed Bento */}
         <section className="space-y-4">
           <div className="flex items-center justify-between">
             <h2 className="text-xs uppercase tracking-widest text-zinc-500 font-mono">
@@ -669,6 +683,9 @@ export default function Home() {
 
       {/* Quick Contact Modal */}
       <ContactModal isOpen={contactOpen} onClose={() => setContactOpen(false)} />
+
+      {/* Quick Schedule Modal */}
+      <ScheduleModal isOpen={scheduleOpen} onClose={() => setScheduleOpen(false)} />
     </div>
   );
 }

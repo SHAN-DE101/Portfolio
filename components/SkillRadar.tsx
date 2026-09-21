@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { ShieldAlert, Zap } from "lucide-react";
+import { Zap } from "lucide-react";
 import SpotlightCard from "./SpotlightCard";
 
 export default function SkillRadar() {

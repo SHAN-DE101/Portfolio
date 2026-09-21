@@ -1,12 +1,11 @@
 "use client";
 
 import SpotlightCard from "./SpotlightCard";
-import { Laptop, Cpu, ShieldCheck, Terminal, Compass, Zap } from "lucide-react";
+import { Laptop, Compass, ShieldCheck } from "lucide-react";
 
 export default function DevSetupBento() {
   return (
     <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-      {/* Dev Environment */}
       <SpotlightCard className="space-y-3">
         <div className="flex items-center gap-2 text-zinc-300 text-xs font-mono">
           <Laptop className="w-4 h-4 text-emerald-400" />
@@ -20,7 +19,6 @@ export default function DevSetupBento() {
         </div>
       </SpotlightCard>
 
-      {/* Engineering Philosophy */}
       <SpotlightCard className="space-y-3">
         <div className="flex items-center gap-2 text-zinc-300 text-xs font-mono">
           <Compass className="w-4 h-4 text-indigo-400" />
@@ -34,7 +32,6 @@ export default function DevSetupBento() {
         </div>
       </SpotlightCard>
 
-      {/* Core Security Suite */}
       <SpotlightCard className="space-y-3">
         <div className="flex items-center gap-2 text-zinc-300 text-xs font-mono">
           <ShieldCheck className="w-4 h-4 text-purple-400" />

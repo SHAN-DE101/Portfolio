@@ -9,7 +9,7 @@ export default function CustomCursor() {
   const [isVisible, setIsVisible] = useState(false);
 
   useEffect(() => {
-    // Only enable on non-touch devices
+    if (typeof window === "undefined") return;
     if (window.matchMedia("(pointer: coarse)").matches) return;
 
     const onMouseMove = (e: MouseEvent) => {
@@ -45,7 +45,6 @@ export default function CustomCursor() {
 
   return (
     <>
-      {/* Center sharp dot */}
       <motion.div
         className="fixed top-0 left-0 w-1.5 h-1.5 rounded-full bg-emerald-400 pointer-events-none z-50 mix-blend-screen"
         animate={{
@@ -55,7 +54,6 @@ export default function CustomCursor() {
         }}
         transition={{ type: "spring", stiffness: 1000, damping: 50 }}
       />
-      {/* Outer halo */}
       <motion.div
         className="fixed top-0 left-0 rounded-full border border-emerald-500/40 pointer-events-none z-50"
         animate={{

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Play, Check, RefreshCw, Send, Radio } from "lucide-react";
+import { Play, RefreshCw, Radio } from "lucide-react";
 import SpotlightCard from "./SpotlightCard";
 import { sound } from "@/lib/sounds";
 

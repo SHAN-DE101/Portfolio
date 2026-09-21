@@ -8,7 +8,10 @@ export interface TerminalModalProps {
   onClose?: () => void;
 }
 
-export default function TerminalModal({ isOpen = false, onClose = () => {} }: TerminalModalProps) {
+export default function TerminalModal({
+  isOpen = false,
+  onClose = () => {},
+}: TerminalModalProps) {
   const [input, setInput] = useState("");
   const [history, setHistory] = useState<Array<{ command: string; output: string }>>([
     {
@@ -74,7 +77,6 @@ export default function TerminalModal({ isOpen = false, onClose = () => {} }: Te
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md">
       <div className="w-full max-w-2xl rounded-2xl border border-zinc-800 bg-zinc-950/95 shadow-2xl overflow-hidden font-mono text-xs text-zinc-300">
-        {/* Terminal Header */}
         <div className="flex items-center justify-between px-4 py-3 border-b border-zinc-800/80 bg-zinc-900/60">
           <div className="flex items-center gap-2">
             <span className="w-3 h-3 rounded-full bg-red-500/80" />
@@ -93,7 +95,6 @@ export default function TerminalModal({ isOpen = false, onClose = () => {} }: Te
           </button>
         </div>
 
-        {/* Terminal Body */}
         <div className="p-4 h-80 overflow-y-auto space-y-3 selection:bg-emerald-500/30 selection:text-emerald-300">
           {history.map((item, index) => (
             <div key={index} className="space-y-1">

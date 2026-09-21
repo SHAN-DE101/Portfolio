@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { GitCommit, GitPullRequest, Star, ExternalLink, Activity } from "lucide-react";
+import { GitCommit, ExternalLink, Activity } from "lucide-react";
 import SpotlightCard from "./SpotlightCard";
 
 interface CommitInfo {
@@ -26,10 +26,8 @@ export default function GithubActivity() {
       url: "https://github.com/SHAN-DE101",
     },
   ]);
-  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Fetch live public events from GitHub API
     fetch("https://api.github.com/users/SHAN-DE101/events/public")
       .then((res) => res.json())
       .then((data) => {
@@ -53,8 +51,7 @@ export default function GithubActivity() {
           }
         }
       })
-      .catch(() => {})
-      .finally(() => setLoading(false));
+      .catch(() => {});
   }, []);
 
   return (
