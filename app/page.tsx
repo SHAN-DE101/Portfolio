@@ -19,7 +19,6 @@ import {
   Shield,
   Cloud,
   FileText,
-  Activity,
   ArrowUpRight,
 } from "lucide-react";
 import TechMarquee from "@/components/Marquee";
@@ -52,6 +51,7 @@ export default function Home() {
   const [cmdOpen, setCmdOpen] = useState(false);
   const [terminalOpen, setTerminalOpen] = useState(false);
   const [searchFilter, setSearchFilter] = useState("");
+  const [activeCategory, setActiveCategory] = useState<"ALL" | "BACKEND" | "AI_VISION">("ALL");
 
   useEffect(() => {
     const updateTime = () => {
@@ -98,9 +98,10 @@ export default function Home() {
     setTimeout(() => setCopied(false), 2000);
   };
 
-  const projects = [
+  const allProjects = [
     {
       title: "Serverless Payment Gateway",
+      categoryType: "BACKEND",
       tagline:
         "High-reliability backend system on Azure Cloud handling transactional integrity, secure tokens, and low-latency REST endpoints.",
       stack: ["Java", "Spring Boot", "Azure Cloud", "REST APIs", "Maven"],
@@ -110,6 +111,7 @@ export default function Home() {
     },
     {
       title: "Financial Transaction System",
+      categoryType: "BACKEND",
       tagline:
         "Engineered transactional services with NoSQL persistence layer, automated Postman validation suites, and rigorous data consistency models.",
       stack: ["Spring Boot", "NoSQL", "Postman", "REST APIs", "Git"],
@@ -119,6 +121,7 @@ export default function Home() {
     },
     {
       title: "Real-Time Object Detection Engine",
+      categoryType: "AI_VISION",
       tagline:
         "Computer vision image and live video classification pipeline utilizing AdaBoost algorithm and HAAR Cascade models for ultra-fast inference.",
       stack: ["Python", "OpenCV", "AdaBoost", "HAAR Cascades"],
@@ -127,6 +130,10 @@ export default function Home() {
       link: "https://github.com/SHAN-DE101",
     },
   ];
+
+  const displayedProjects = allProjects.filter(
+    (p) => activeCategory === "ALL" || p.categoryType === activeCategory
+  );
 
   const marqueeRow1 = [
     "Core Java",
@@ -151,6 +158,7 @@ export default function Home() {
   ];
 
   const commandItems = [
+    { label: "View / Download Resume (PDF)", action: () => window.open("/resume.pdf", "_blank"), icon: FileText, hint: "PDF" },
     { label: "Launch Interactive Shell (`~`)", action: () => { setCmdOpen(false); setTerminalOpen(true); }, icon: Terminal, hint: "` key" },
     { label: "Copy Email Address", action: copyEmail, icon: Mail, hint: "deyshantanu101@gmail.com" },
     { label: "View GitHub Profile", action: () => window.open("https://github.com/SHAN-DE101", "_blank"), icon: GithubIcon, hint: "SHAN-DE101" },
@@ -176,6 +184,14 @@ export default function Home() {
           <a href="#projects" className="hover:text-white transition-colors">Projects</a>
           <a href="#experience" className="hover:text-white transition-colors">Experience</a>
           <a href="#skills" className="hover:text-white transition-colors">Skills</a>
+          <a
+            href="/resume.pdf"
+            target="_blank"
+            rel="noreferrer"
+            className="hover:text-emerald-400 transition-colors hidden sm:inline"
+          >
+            CV
+          </a>
           <button
             onClick={() => setTerminalOpen(true)}
             className="flex items-center gap-1 hover:text-emerald-400 transition-colors"
@@ -197,9 +213,8 @@ export default function Home() {
 
       {/* Main Container */}
       <main className="relative z-10 max-w-4xl mx-auto px-6 pt-36 pb-32 space-y-24">
-        {/* Vishal-style Hero Section */}
+        {/* Hero Section */}
         <section id="about" className="space-y-6">
-          {/* Live Status Pill */}
           <div className="inline-flex items-center gap-2.5 px-3.5 py-1.5 rounded-full border border-emerald-500/20 bg-emerald-500/10 text-emerald-400 text-xs tracking-wide">
             <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
             <span>Available for SDE / Backend Roles</span>
@@ -234,6 +249,15 @@ export default function Home() {
               {copied ? <Check className="w-4 h-4 text-emerald-600" /> : <Mail className="w-4 h-4" />}
               <span>{copied ? "Email Copied!" : "deyshantanu101@gmail.com"}</span>
             </button>
+            <a
+              href="/resume.pdf"
+              target="_blank"
+              rel="noreferrer"
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-xl border border-zinc-800 bg-zinc-900/80 text-zinc-200 text-sm hover:border-zinc-700 hover:text-white transition-all shadow-sm"
+            >
+              <FileText className="w-4 h-4 text-emerald-400" />
+              <span>Resume (CV)</span>
+            </a>
             <button
               onClick={() => setTerminalOpen(true)}
               className="inline-flex items-center gap-2 px-4 py-2 rounded-xl border border-zinc-800 bg-zinc-900/60 text-zinc-300 text-sm hover:border-zinc-700 hover:text-white transition-all cursor-pointer"
@@ -282,7 +306,7 @@ export default function Home() {
           </div>
         </section>
 
-        {/* Dual Marquee Ribbon (Vishal style) */}
+        {/* Dual Marquee */}
         <section className="space-y-3">
           <div className="flex items-center justify-between pb-1">
             <h2 className="text-xs uppercase tracking-widest text-zinc-500 font-mono">
@@ -294,64 +318,102 @@ export default function Home() {
           <TechMarquee items={marqueeRow2} reverse={true} />
         </section>
 
-        {/* Featured Projects with Spotlight Cards */}
+        {/* Featured Projects with Filter Tabs */}
         <section id="projects" className="space-y-6">
-          <div className="flex items-center justify-between">
-            <h2 className="text-2xl font-bold tracking-tight text-white flex items-center gap-2">
-              <Sparkles className="w-5 h-5 text-amber-400" />
-              Featured Works
-            </h2>
-            <span className="text-xs text-zinc-500 font-mono">Production Systems</span>
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div>
+              <h2 className="text-2xl font-bold tracking-tight text-white flex items-center gap-2">
+                <Sparkles className="w-5 h-5 text-amber-400" />
+                Featured Works
+              </h2>
+              <p className="text-xs text-zinc-500 pt-1">Production-ready backend &amp; intelligence pipelines</p>
+            </div>
+
+            {/* Filter Tabs */}
+            <div className="flex items-center gap-1.5 p-1 rounded-xl bg-zinc-900/80 border border-zinc-800 text-xs font-mono">
+              <button
+                onClick={() => setActiveCategory("ALL")}
+                className={`px-3 py-1 rounded-lg transition-all ${
+                  activeCategory === "ALL"
+                    ? "bg-white text-black font-semibold shadow-sm"
+                    : "text-zinc-400 hover:text-white"
+                }`}
+              >
+                All
+              </button>
+              <button
+                onClick={() => setActiveCategory("BACKEND")}
+                className={`px-3 py-1 rounded-lg transition-all ${
+                  activeCategory === "BACKEND"
+                    ? "bg-white text-black font-semibold shadow-sm"
+                    : "text-zinc-400 hover:text-white"
+                }`}
+              >
+                Backend
+              </button>
+              <button
+                onClick={() => setActiveCategory("AI_VISION")}
+                className={`px-3 py-1 rounded-lg transition-all ${
+                  activeCategory === "AI_VISION"
+                    ? "bg-white text-black font-semibold shadow-sm"
+                    : "text-zinc-400 hover:text-white"
+                }`}
+              >
+                AI / Vision
+              </button>
+            </div>
           </div>
 
           <div className="grid grid-cols-1 gap-4">
-            {projects.map((p, idx) => (
-              <motion.div
-                key={p.title}
-                initial={{ opacity: 0, y: 16 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: idx * 0.1 }}
-              >
-                <SpotlightCard>
-                  <div className="flex items-start justify-between">
-                    <div className="space-y-2.5">
-                      <div className="flex flex-wrap items-center gap-3">
-                        <span className="text-xs font-mono text-zinc-500">0{idx + 1}</span>
-                        <h3 className="text-lg font-semibold text-white hover:text-emerald-400 transition-colors">
-                          {p.title}
-                        </h3>
-                        <span className="text-xs font-mono text-zinc-400 border-l border-zinc-800 pl-2.5">
-                          {p.category}
-                        </span>
-                        <span className="hidden sm:inline-block px-2 py-0.5 text-[10px] font-mono rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
-                          {p.metrics}
-                        </span>
-                      </div>
-                      <p className="text-sm text-zinc-400 max-w-xl leading-relaxed">{p.tagline}</p>
-                      <div className="flex flex-wrap gap-1.5 pt-1">
-                        {p.stack.map((tech) => (
-                          <span
-                            key={tech}
-                            className="px-2.5 py-0.5 text-xs rounded-md bg-zinc-900 border border-zinc-800 text-zinc-400 font-mono"
-                          >
-                            {tech}
+            <AnimatePresence mode="wait">
+              {displayedProjects.map((p, idx) => (
+                <motion.div
+                  key={p.title}
+                  initial={{ opacity: 0, y: 12 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -12 }}
+                  transition={{ duration: 0.2, delay: idx * 0.05 }}
+                >
+                  <SpotlightCard>
+                    <div className="flex items-start justify-between">
+                      <div className="space-y-2.5">
+                        <div className="flex flex-wrap items-center gap-3">
+                          <span className="text-xs font-mono text-zinc-500">0{idx + 1}</span>
+                          <h3 className="text-lg font-semibold text-white hover:text-emerald-400 transition-colors">
+                            {p.title}
+                          </h3>
+                          <span className="text-xs font-mono text-zinc-400 border-l border-zinc-800 pl-2.5">
+                            {p.category}
                           </span>
-                        ))}
+                          <span className="hidden sm:inline-block px-2 py-0.5 text-[10px] font-mono rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+                            {p.metrics}
+                          </span>
+                        </div>
+                        <p className="text-sm text-zinc-400 max-w-xl leading-relaxed">{p.tagline}</p>
+                        <div className="flex flex-wrap gap-1.5 pt-1">
+                          {p.stack.map((tech) => (
+                            <span
+                              key={tech}
+                              className="px-2.5 py-0.5 text-xs rounded-md bg-zinc-900 border border-zinc-800 text-zinc-400 font-mono"
+                            >
+                              {tech}
+                            </span>
+                          ))}
+                        </div>
                       </div>
+                      <a
+                        href={p.link}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="p-2.5 rounded-xl border border-zinc-800 bg-zinc-900 text-zinc-400 hover:text-white hover:border-zinc-600 transition-all shrink-0 ml-4"
+                      >
+                        <ArrowUpRight className="w-4 h-4" />
+                      </a>
                     </div>
-                    <a
-                      href={p.link}
-                      target="_blank"
-                      rel="noreferrer"
-                      className="p-2.5 rounded-xl border border-zinc-800 bg-zinc-900 text-zinc-400 hover:text-white hover:border-zinc-600 transition-all shrink-0 ml-4"
-                    >
-                      <ArrowUpRight className="w-4 h-4" />
-                    </a>
-                  </div>
-                </SpotlightCard>
-              </motion.div>
-            ))}
+                  </SpotlightCard>
+                </motion.div>
+              ))}
+            </AnimatePresence>
           </div>
         </section>
 
@@ -386,7 +448,7 @@ export default function Home() {
           </SpotlightCard>
         </section>
 
-        {/* Education & Certifications Bento */}
+        {/* Education & Credentials */}
         <section id="skills" className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <SpotlightCard className="space-y-4">
             <h3 className="text-lg font-semibold text-white flex items-center gap-2">
@@ -495,10 +557,10 @@ export default function Home() {
                       <button
                         key={i}
                         onClick={cmd.action}
-                        className="w-full flex items-center justify-between px-3 py-2.5 rounded-xl hover:bg-zinc-900 text-left text-sm text-zinc-300 hover:text-white transition-all cursor-pointer"
+                        className="w-full flex items-center justify-between px-3 py-2.5 rounded-xl hover:bg-zinc-900 text-left text-sm text-zinc-300 hover:text-white transition-all group cursor-pointer"
                       >
                         <div className="flex items-center gap-2.5">
-                          <Icon className="w-4 h-4 text-zinc-500" />
+                          <Icon className="w-4 h-4 text-zinc-500 group-hover:text-emerald-400 transition-colors" />
                           <span>{cmd.label}</span>
                         </div>
                         <span className="text-xs font-mono text-zinc-600">{cmd.hint}</span>

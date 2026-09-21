@@ -1,44 +1,59 @@
-import type { Metadata } from 'next';
-import './globals.css';
+import type { Metadata } from "next";
+import { Geist, Geist_Mono } from "next/font/google";
+import "./globals.css";
+
+const geistSans = Geist({
+  variable: "--font-geist-sans",
+  subsets: ["latin"],
+});
+
+const geistMono = Geist_Mono({
+  variable: "--font-geist-mono",
+  subsets: ["latin"],
+});
 
 export const metadata: Metadata = {
-  title: 'Shantanu Dey — Software Engineer & Cloud Security Architect',
+  title: "Shantanu Dey — Software & Systems Engineer",
   description:
-    'Portfolio of Shantanu Dey: Software Engineer specializing in backend microservices, edge reverse proxies (AI Token Gateway), and serverless distributed logistics (E-Fuel).',
+    "Software Engineer specializing in Java, Spring Boot, REST APIs, and Azure Cloud. M.Tech Cyber Security at MAKAUT.",
   keywords: [
-    'Shantanu Dey',
-    'Software Engineer',
-    'AI Token Gateway',
-    'E-Fuel',
-    'Spring Boot',
-    'Cloud Architecture',
-    'Cybersecurity',
-    'Next.js',
-    'Azure',
+    "Shantanu Dey",
+    "Software Engineer",
+    "Backend Developer",
+    "Java",
+    "Spring Boot",
+    "Azure",
+    "Cyber Security",
+    "Persistent Systems",
   ],
-  authors: [{ name: 'Shantanu Dey', url: 'https://github.com/SHAN-DE101' }],
-  creator: 'Shantanu Dey',
+  authors: [{ name: "Shantanu Dey", url: "https://shantanudey-portfolio.vercel.app" }],
   openGraph: {
-    title: 'Shantanu Dey — Software Engineer & Cloud Security Architect',
+    title: "Shantanu Dey — Software & Systems Engineer",
     description:
-      'Backend engineering, edge API gateways, and distributed cloud systems. Explore AI Token Gateway and E-Fuel project architectures.',
-    url: 'https://portfolio-rouge-eight-48.vercel.app',
-    siteName: 'Shantanu Dey Portfolio',
-    type: 'website',
+      "Backend & Cloud Engineer specializing in Java, Spring Boot, REST APIs, and Azure Cloud.",
+    url: "https://shantanudey-portfolio.vercel.app",
+    siteName: "Shantanu Dey Portfolio",
+    locale: "en_US",
+    type: "website",
   },
-  icons: {
-    icon: '/favicon.ico',
+  twitter: {
+    card: "summary_large_image",
+    title: "Shantanu Dey — Software & Systems Engineer",
+    description:
+      "Backend & Cloud Engineer specializing in Java, Spring Boot, REST APIs, and Azure Cloud.",
   },
 };
 
 export default function RootLayout({
   children,
-}: {
+}: Readonly<{
   children: React.ReactNode;
-}) {
+}>) {
   return (
-    <html lang="en">
-      <body className="antialiased selection:bg-teal-300 selection:text-slate-900">
+    <html lang="en" className="dark scroll-smooth">
+      <body
+        className={`${geistSans.variable}${geistMono.variable} antialiased bg-black text-zinc-100 selection:bg-white selection:text-black`}
+      >
         {children}
       </body>
     </html>
