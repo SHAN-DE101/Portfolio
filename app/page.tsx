@@ -37,6 +37,7 @@ import DevSetupBento from "@/components/DevSetupBento";
 import NetworkCanvas from "@/components/NetworkCanvas";
 import ProjectDetailModal, { ProjectDetail } from "@/components/ProjectDetailModal";
 import DatabaseSandbox from "@/components/DatabaseSandbox";
+import SecurityAudit from "@/components/SecurityAudit";
 import Toast from "@/components/Toast";
 import { sound } from "@/lib/sounds";
 
@@ -560,6 +561,7 @@ export default function Home() {
           </div>
 
           <DatabaseSandbox onNotify={showToast} />
+          <SecurityAudit onNotify={showToast} />
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <ApiPlayground />
