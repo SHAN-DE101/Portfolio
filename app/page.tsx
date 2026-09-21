@@ -463,38 +463,7 @@ export default function Home() {
               </p>
             </div>
 
-            <div className="flex items-center gap-1.5 p-1 rounded-xl bg-zinc-900/80 border border-zinc-800 text-xs font-mono">
-              <button
-                onClick={() => { sound.playClick(); setActiveCategory("ALL"); }}
-                className={`px-3 py-1 rounded-lg transition-all cursor-pointer ${
-                  activeCategory === "ALL"
-                    ? "bg-white text-black font-semibold shadow-sm"
-                    : "text-zinc-400 hover:text-white"
-                }`}
-              >
-                All
-              </button>
-              <button
-                onClick={() => { sound.playClick(); setActiveCategory("BACKEND"); }}
-                className={`px-3 py-1 rounded-lg transition-all cursor-pointer ${
-                  activeCategory === "BACKEND"
-                    ? "bg-white text-black font-semibold shadow-sm"
-                    : "text-zinc-400 hover:text-white"
-                }`}
-              >
-                Backend
-              </button>
-              <button
-                onClick={() => { sound.playClick(); setActiveCategory("AI_VISION"); }}
-                className={`px-3 py-1 rounded-lg transition-all cursor-pointer ${
-                  activeCategory === "AI_VISION"
-                    ? "bg-white text-black font-semibold shadow-sm"
-                    : "text-zinc-400 hover:text-white"
-                }`}
-              >
-                AI / Vision
-              </button>
-            </div>
+            ${targetTabs}
           </div>
 
           <div className="grid grid-cols-1 gap-4">
