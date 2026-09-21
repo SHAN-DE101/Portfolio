@@ -36,6 +36,8 @@ import RotatingBadge from "@/components/RotatingBadge";
 import DevSetupBento from "@/components/DevSetupBento";
 import NetworkCanvas from "@/components/NetworkCanvas";
 import ProjectDetailModal, { ProjectDetail } from "@/components/ProjectDetailModal";
+import DatabaseSandbox from "@/components/DatabaseSandbox";
+import Toast from "@/components/Toast";
 import { sound } from "@/lib/sounds";
 
 function GithubIcon({ className = "w-4 h-4" }: { className?: string }) {
@@ -61,6 +63,7 @@ function LinkedinIcon({ className = "w-4 h-4" }: { className?: string }) {
 export default function Home() {
   const [time, setTime] = useState<string>("");
   const [copied, setCopied] = useState(false);
+  const [toastMessage, setToastMessage] = useState<string | null>(null);
   const [cmdOpen, setCmdOpen] = useState(false);
   const [terminalOpen, setTerminalOpen] = useState(false);
   const [contactOpen, setContactOpen] = useState(false);
@@ -75,6 +78,11 @@ export default function Home() {
     damping: 30,
     restDelta: 0.001,
   });
+
+  const showToast = (msg: string) => {
+    setToastMessage(msg);
+    setTimeout(() => setToastMessage(null), 3000);
+  };
 
   useEffect(() => {
     const updateTime = () => {
@@ -124,6 +132,7 @@ export default function Home() {
     navigator.clipboard.writeText("deyshantanu101@gmail.com");
     sound.playSuccess();
     setCopied(true);
+    showToast("Email copied: deyshantanu101@gmail.com");
     setTimeout(() => setCopied(false), 2000);
   };
 
@@ -132,8 +141,7 @@ export default function Home() {
       "Hi Shantanu, I came across your portfolio and was impressed by your backend experience at Persistent Systems and M.Tech in Cyber Security. Would love to connect regarding software engineering roles.";
     navigator.clipboard.writeText(note);
     sound.playSuccess();
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
+    showToast("Recruiter LinkedIn introduction note copied!");
   };
 
   const allProjects: Array<ProjectDetail & { categoryType: "BACKEND" | "AI_VISION" }> = [
@@ -256,6 +264,7 @@ export default function Home() {
       <CustomCursor />
       <NetworkCanvas />
       <TelemetryWidget />
+      <Toast message={toastMessage} />
 
       {/* Top Scroll Indicator */}
       <motion.div
@@ -545,10 +554,13 @@ export default function Home() {
         <section id="telemetry" className="space-y-4">
           <div className="flex items-center justify-between">
             <h2 className="text-xs uppercase tracking-widest text-zinc-500 font-mono">
-              Live Edge Probes &amp; Telemetry
+              Live Edge Probes &amp; Database Benchmarks
             </h2>
             <span className="text-[10px] font-mono text-emerald-400">EDGE RUNTIME ACTIVE</span>
           </div>
+
+          <DatabaseSandbox onNotify={showToast} />
+
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <ApiPlayground />
             <SkillRadar />
