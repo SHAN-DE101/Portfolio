@@ -7,7 +7,6 @@ import {
   Clock,
   Sparkles,
   Terminal,
-  ExternalLink,
   Briefcase,
   GraduationCap,
   Award,
@@ -27,6 +26,10 @@ import SpotlightCard from "@/components/SpotlightCard";
 import TerminalModal from "@/components/TerminalModal";
 import CustomCursor from "@/components/CustomCursor";
 import ContactModal from "@/components/ContactModal";
+import TelemetryWidget from "@/components/TelemetryWidget";
+import GithubActivity from "@/components/GithubActivity";
+import ArchitectureSnippet from "@/components/ArchitectureSnippet";
+import { sound } from "@/lib/sounds";
 
 function GithubIcon({ className = "w-4 h-4" }: { className?: string }) {
   return (
@@ -57,7 +60,6 @@ export default function Home() {
   const [searchFilter, setSearchFilter] = useState("");
   const [activeCategory, setActiveCategory] = useState<"ALL" | "BACKEND" | "AI_VISION">("ALL");
 
-  // Scroll Progress Bar
   const { scrollYProgress } = useScroll();
   const scaleX = useSpring(scrollYProgress, {
     stiffness: 100,
@@ -89,10 +91,12 @@ export default function Home() {
         (e.key === "/" && !["INPUT", "TEXTAREA"].includes((e.target as HTMLElement).tagName))
       ) {
         e.preventDefault();
+        sound.playClick();
         setCmdOpen((prev) => !prev);
       }
       if (e.key === "`" && !["INPUT", "TEXTAREA"].includes((e.target as HTMLElement).tagName)) {
         e.preventDefault();
+        sound.playClick();
         setTerminalOpen((prev) => !prev);
       }
       if (e.key === "Escape") {
@@ -107,6 +111,7 @@ export default function Home() {
 
   const copyEmail = () => {
     navigator.clipboard.writeText("deyshantanu101@gmail.com");
+    sound.playSuccess();
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   };
@@ -171,14 +176,14 @@ export default function Home() {
   ];
 
   const commandItems = [
-    { label: "Send Direct Message (Modal)", action: () => { setCmdOpen(false); setContactOpen(true); }, icon: Send, hint: "Message" },
-    { label: "View / Download Resume (PDF)", action: () => window.open("/resume.pdf", "_blank"), icon: FileText, hint: "PDF" },
-    { label: "Launch Interactive Shell (`~`)", action: () => { setCmdOpen(false); setTerminalOpen(true); }, icon: Terminal, hint: "` key" },
+    { label: "Send Direct Message (Modal)", action: () => { sound.playClick(); setCmdOpen(false); setContactOpen(true); }, icon: Send, hint: "Message" },
+    { label: "View / Download Resume (PDF)", action: () => { sound.playClick(); window.open("/resume.pdf", "_blank"); }, icon: FileText, hint: "PDF" },
+    { label: "Launch Interactive Shell (`~`)", action: () => { sound.playClick(); setCmdOpen(false); setTerminalOpen(true); }, icon: Terminal, hint: "` key" },
     { label: "Copy Email Address", action: copyEmail, icon: Mail, hint: "deyshantanu101@gmail.com" },
-    { label: "View GitHub Profile", action: () => window.open("https://github.com/SHAN-DE101", "_blank"), icon: GithubIcon, hint: "SHAN-DE101" },
-    { label: "View LinkedIn", action: () => window.open("https://www.linkedin.com/in/shantanu-dey-7724571b2/", "_blank"), icon: LinkedinIcon, hint: "Connect" },
-    { label: "Jump to Projects", action: () => { window.location.href = "#projects"; setCmdOpen(false); }, icon: Sparkles, hint: "#projects" },
-    { label: "Jump to Experience", action: () => { window.location.href = "#experience"; setCmdOpen(false); }, icon: Briefcase, hint: "#experience" },
+    { label: "View GitHub Profile", action: () => { sound.playClick(); window.open("https://github.com/SHAN-DE101", "_blank"); }, icon: GithubIcon, hint: "SHAN-DE101" },
+    { label: "View LinkedIn", action: () => { sound.playClick(); window.open("https://www.linkedin.com/in/shantanu-dey-7724571b2/", "_blank"); }, icon: LinkedinIcon, hint: "Connect" },
+    { label: "Jump to Projects", action: () => { sound.playClick(); window.location.href = "#projects"; setCmdOpen(false); }, icon: Sparkles, hint: "#projects" },
+    { label: "Jump to Experience", action: () => { sound.playClick(); window.location.href = "#experience"; setCmdOpen(false); }, icon: Briefcase, hint: "#experience" },
   ];
 
   const filteredCommands = commandItems.filter(
@@ -190,6 +195,7 @@ export default function Home() {
   return (
     <div className="min-h-screen bg-black text-zinc-100 selection:bg-white selection:text-black font-sans relative">
       <CustomCursor />
+      <TelemetryWidget />
 
       {/* Top Scroll Indicator */}
       <motion.div
@@ -202,13 +208,13 @@ export default function Home() {
       {/* Floating Pill Nav */}
       <header className="fixed top-6 left-0 right-0 z-50 flex justify-center px-4">
         <nav className="flex items-center gap-5 sm:gap-6 px-6 py-2.5 rounded-full border border-zinc-800/80 bg-zinc-950/70 backdrop-blur-xl shadow-2xl text-xs font-medium text-zinc-400">
-          <a href="#about" className="hover:text-white transition-colors">About</a>
-          <a href="#projects" className="hover:text-white transition-colors">Projects</a>
-          <a href="#experience" className="hover:text-white transition-colors">Experience</a>
-          <a href="#skills" className="hover:text-white transition-colors">Skills</a>
+          <a href="#about" onClick={() => sound.playClick()} className="hover:text-white transition-colors">About</a>
+          <a href="#projects" onClick={() => sound.playClick()} className="hover:text-white transition-colors">Projects</a>
+          <a href="#experience" onClick={() => sound.playClick()} className="hover:text-white transition-colors">Experience</a>
+          <a href="#skills" onClick={() => sound.playClick()} className="hover:text-white transition-colors">Skills</a>
           <button
-            onClick={() => setContactOpen(true)}
-            className="hover:text-emerald-400 transition-colors"
+            onClick={() => { sound.playClick(); setContactOpen(true); }}
+            className="hover:text-emerald-400 transition-colors cursor-pointer"
           >
             Contact
           </button>
@@ -216,13 +222,14 @@ export default function Home() {
             href="/resume.pdf"
             target="_blank"
             rel="noreferrer"
+            onClick={() => sound.playClick()}
             className="hover:text-emerald-400 transition-colors hidden sm:inline"
           >
             CV
           </a>
           <button
-            onClick={() => setTerminalOpen(true)}
-            className="flex items-center gap-1 hover:text-emerald-400 transition-colors"
+            onClick={() => { sound.playClick(); setTerminalOpen(true); }}
+            className="flex items-center gap-1 hover:text-emerald-400 transition-colors cursor-pointer"
           >
             <Terminal className="w-3.5 h-3.5" />
             <span className="hidden sm:inline">CLI</span>
@@ -231,6 +238,7 @@ export default function Home() {
             href="https://github.com/SHAN-DE101"
             target="_blank"
             rel="noreferrer"
+            onClick={() => sound.playClick()}
             className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-zinc-800/80 text-zinc-200 hover:bg-white hover:text-black transition-all"
           >
             <GithubIcon className="w-3.5 h-3.5" />
@@ -271,7 +279,7 @@ export default function Home() {
           {/* Action Row */}
           <div className="flex flex-wrap items-center gap-3 pt-2">
             <button
-              onClick={() => setContactOpen(true)}
+              onClick={() => { sound.playClick(); setContactOpen(true); }}
               className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-white text-black text-sm font-semibold hover:bg-zinc-200 transition-all shadow-md active:scale-95 cursor-pointer"
             >
               <Send className="w-4 h-4" />
@@ -288,13 +296,14 @@ export default function Home() {
               href="/resume.pdf"
               target="_blank"
               rel="noreferrer"
+              onClick={() => sound.playClick()}
               className="inline-flex items-center gap-2 px-4 py-2 rounded-xl border border-zinc-800 bg-zinc-900/80 text-zinc-200 text-sm hover:border-zinc-700 hover:text-white transition-all shadow-sm"
             >
               <FileText className="w-4 h-4 text-emerald-400" />
               <span>Resume (CV)</span>
             </a>
             <button
-              onClick={() => setTerminalOpen(true)}
+              onClick={() => { sound.playClick(); setTerminalOpen(true); }}
               className="inline-flex items-center gap-2 px-4 py-2 rounded-xl border border-zinc-800 bg-zinc-900/60 text-zinc-300 text-sm hover:border-zinc-700 hover:text-white transition-all cursor-pointer"
             >
               <Terminal className="w-4 h-4 text-emerald-400" />
@@ -304,6 +313,7 @@ export default function Home() {
               href="https://github.com/SHAN-DE101"
               target="_blank"
               rel="noreferrer"
+              onClick={() => sound.playClick()}
               className="inline-flex items-center gap-2 px-4 py-2 rounded-xl border border-zinc-800 bg-zinc-900/60 text-zinc-300 text-sm hover:border-zinc-700 hover:text-white transition-all"
             >
               <GithubIcon className="w-4 h-4" />
@@ -313,6 +323,7 @@ export default function Home() {
               href="https://www.linkedin.com/in/shantanu-dey-7724571b2/"
               target="_blank"
               rel="noreferrer"
+              onClick={() => sound.playClick()}
               className="inline-flex items-center gap-2 px-4 py-2 rounded-xl border border-zinc-800 bg-zinc-900/60 text-zinc-300 text-sm hover:border-zinc-700 hover:text-white transition-all"
             >
               <LinkedinIcon className="w-4 h-4" />
@@ -367,8 +378,8 @@ export default function Home() {
             {/* Filter Tabs */}
             <div className="flex items-center gap-1.5 p-1 rounded-xl bg-zinc-900/80 border border-zinc-800 text-xs font-mono">
               <button
-                onClick={() => setActiveCategory("ALL")}
-                className={`px-3 py-1 rounded-lg transition-all ${
+                onClick={() => { sound.playClick(); setActiveCategory("ALL"); }}
+                className={`px-3 py-1 rounded-lg transition-all cursor-pointer ${
                   activeCategory === "ALL"
                     ? "bg-white text-black font-semibold shadow-sm"
                     : "text-zinc-400 hover:text-white"
@@ -377,8 +388,8 @@ export default function Home() {
                 All
               </button>
               <button
-                onClick={() => setActiveCategory("BACKEND")}
-                className={`px-3 py-1 rounded-lg transition-all ${
+                onClick={() => { sound.playClick(); setActiveCategory("BACKEND"); }}
+                className={`px-3 py-1 rounded-lg transition-all cursor-pointer ${
                   activeCategory === "BACKEND"
                     ? "bg-white text-black font-semibold shadow-sm"
                     : "text-zinc-400 hover:text-white"
@@ -387,8 +398,8 @@ export default function Home() {
                 Backend
               </button>
               <button
-                onClick={() => setActiveCategory("AI_VISION")}
-                className={`px-3 py-1 rounded-lg transition-all ${
+                onClick={() => { sound.playClick(); setActiveCategory("AI_VISION"); }}
+                className={`px-3 py-1 rounded-lg transition-all cursor-pointer ${
                   activeCategory === "AI_VISION"
                     ? "bg-white text-black font-semibold shadow-sm"
                     : "text-zinc-400 hover:text-white"
@@ -440,6 +451,7 @@ export default function Home() {
                         href={p.link}
                         target="_blank"
                         rel="noreferrer"
+                        onClick={() => sound.playClick()}
                         className="p-2.5 rounded-xl border border-zinc-800 bg-zinc-900 text-zinc-400 hover:text-white hover:border-zinc-600 transition-all shrink-0 ml-4"
                       >
                         <ArrowUpRight className="w-4 h-4" />
@@ -450,6 +462,12 @@ export default function Home() {
               ))}
             </AnimatePresence>
           </div>
+        </section>
+
+        {/* Live GitHub & Clean Architecture Blueprint Grid */}
+        <section className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <GithubActivity />
+          <ArchitectureSnippet />
         </section>
 
         {/* Experience Section */}
@@ -529,9 +547,9 @@ export default function Home() {
             <span>© {new Date().getFullYear()} Shantanu Dey</span>
           </div>
           <div className="flex items-center gap-4">
-            <a href="https://github.com/SHAN-DE101" target="_blank" rel="noreferrer" className="hover:text-zinc-300 transition-colors">GitHub</a>
+            <a href="https://github.com/SHAN-DE101" target="_blank" rel="noreferrer" onClick={() => sound.playClick()} className="hover:text-zinc-300 transition-colors">GitHub</a>
             <span>•</span>
-            <a href="https://www.linkedin.com/in/shantanu-dey-7724571b2/" target="_blank" rel="noreferrer" className="hover:text-zinc-300 transition-colors">LinkedIn</a>
+            <a href="https://www.linkedin.com/in/shantanu-dey-7724571b2/" target="_blank" rel="noreferrer" onClick={() => sound.playClick()} className="hover:text-zinc-300 transition-colors">LinkedIn</a>
           </div>
         </footer>
       </main>
@@ -539,7 +557,7 @@ export default function Home() {
       {/* Floating Bottom Quick Action Trigger */}
       <div className="fixed bottom-6 right-6 z-40 flex items-center gap-2">
         <button
-          onClick={() => setTerminalOpen(true)}
+          onClick={() => { sound.playClick(); setTerminalOpen(true); }}
           className="flex items-center gap-1.5 px-3 py-2 rounded-full border border-zinc-800/90 bg-zinc-950/80 backdrop-blur-xl shadow-2xl text-xs text-zinc-400 hover:border-emerald-500/50 hover:text-emerald-400 transition-all cursor-pointer"
           title="Toggle Shell Terminal"
         >
@@ -547,7 +565,7 @@ export default function Home() {
           <kbd className="px-1.5 py-0.5 rounded bg-zinc-800 text-[10px] font-mono text-zinc-300">`</kbd>
         </button>
         <button
-          onClick={() => setCmdOpen(true)}
+          onClick={() => { sound.playClick(); setCmdOpen(true); }}
           className="flex items-center gap-2 px-3.5 py-2 rounded-full border border-zinc-800/90 bg-zinc-950/80 backdrop-blur-xl shadow-2xl text-xs text-zinc-400 hover:border-zinc-600 hover:text-white transition-all cursor-pointer"
         >
           <Command className="w-3.5 h-3.5 text-zinc-500" />
