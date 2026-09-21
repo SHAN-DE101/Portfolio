@@ -1,0 +1,1238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0"/>
+  <title>E-Fuel — Emergency Fuel &amp; EV Charging Delivery</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.2/babel.min.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=Inter:wght@400;500;600&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --bg:        #080C18;
+      --surface:   #0E1525;
+      --elevated:  #152034;
+      --border:    #1E304A;
+      --border-hi: #2A4468;
+      --amber:     #F5A623;
+      --amber-dim: #F5A62322;
+      --amber-mid: #F5A62344;
+      --amber-glow:#F5A62388;
+      --green:     #22D07A;
+      --green-dim: #22D07A22;
+      --red:       #F5564A;
+      --red-dim:   #F5564A22;
+      --indigo:    #7B8FFF;
+      --indigo-dim:#7B8FFF22;
+      --text:      #E8F4FF;
+      --text-mid:  #8BA5C8;
+      --text-dim:  #4A6FA5;
+      --radius-sm: 10px;
+      --radius-md: 14px;
+      --radius-lg: 20px;
+      --radius-xl: 24px;
+    }
+    *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+    html, body, #root { min-height:100vh; background:var(--bg); }
+    body {
+      font-family:'Inter', sans-serif;
+      color:var(--text);
+      -webkit-font-smoothing:antialiased;
+      overscroll-behavior:none;
+    }
+    ::-webkit-scrollbar { width:4px; }
+    ::-webkit-scrollbar-track { background:var(--bg); }
+    ::-webkit-scrollbar-thumb { background:var(--border); border-radius:4px; }
+    .syne   { font-family:'Syne', sans-serif; }
+    .mono   { font-family:'Space Mono', monospace; }
+    .text-amber { color: var(--amber); }
+    .text-mid   { color: var(--text-mid); }
+    .text-dim   { color: var(--text-dim); }
+    .inp {
+      width:100%; padding:13px 16px;
+      background:var(--elevated); border:1.5px solid var(--border);
+      border-radius:var(--radius-md); color:var(--text);
+      font-family:'Inter', sans-serif; font-size:15px;
+      outline:none; transition:border-color .2s, box-shadow .2s;
+    }
+    .inp:focus { border-color:var(--amber); box-shadow:0 0 0 3px var(--amber-dim); }
+    .inp::placeholder { color:var(--text-dim); }
+    .lbl {
+      display:block; font-size:11px; font-weight:600;
+      letter-spacing:.08em; color:var(--text-dim);
+      text-transform:uppercase; margin-bottom:7px;
+    }
+    .fg { margin-bottom:16px; }
+    .btn-primary {
+      width:100%; padding:15px 20px;
+      background:var(--amber);
+      border:none; border-radius:var(--radius-md); color:#080C18;
+      font-family:'Syne', sans-serif; font-size:15px; font-weight:800;
+      cursor:pointer; letter-spacing:.02em;
+      box-shadow:0 4px 20px var(--amber-mid);
+      transition:transform .15s, box-shadow .15s, opacity .15s;
+      display:flex; align-items:center; justify-content:center; gap:8px;
+    }
+    .btn-primary:hover  { transform:translateY(-1px); box-shadow:0 6px 28px var(--amber-glow); }
+    .btn-primary:active { transform:translateY(0); box-shadow:0 2px 12px var(--amber-mid); }
+    .btn-primary:disabled { opacity:.45; cursor:not-allowed; transform:none; box-shadow:none; }
+    .btn-ghost {
+      width:100%; padding:13px 20px;
+      background:transparent; border:1.5px solid var(--border);
+      border-radius:var(--radius-md); color:var(--text-mid);
+      font-family:'Inter', sans-serif; font-size:14px; font-weight:600;
+      cursor:pointer; transition:border-color .15s, color .15s;
+    }
+    .btn-ghost:hover { border-color:var(--border-hi); color:var(--text); }
+    .btn-otp {
+      padding:13px 14px; background:transparent; border:1.5px solid var(--amber);
+      border-radius:var(--radius-md); color:var(--amber);
+      font-family:'Inter', sans-serif; font-size:13px; font-weight:600;
+      cursor:pointer; white-space:nowrap; transition:background .15s;
+      flex-shrink:0;
+    }
+    .btn-otp:hover   { background:var(--amber-dim); }
+    .btn-otp:disabled{ opacity:.4; cursor:not-allowed; }
+    .alert {
+      padding:11px 14px; border-radius:var(--radius-sm); font-size:13px;
+      margin-bottom:14px; display:flex; align-items:center; gap:9px; line-height:1.4;
+    }
+    .alert-ok  { background:var(--green-dim); border:1px solid #22D07A44; color:var(--green); }
+    .alert-err { background:var(--red-dim);   border:1px solid #F5564A44; color:var(--red); }
+    .screen-auth {
+      min-height:100vh; display:flex; flex-direction:column;
+      position:relative; overflow:hidden;
+    }
+    .auth-hero {
+      flex-shrink:0; height:220px; position:relative; overflow:hidden;
+      background:var(--surface);
+    }
+    .auth-hero-svg { width:100%; height:100%; display:block; }
+    .auth-hero::after {
+      content:''; position:absolute; bottom:0; left:0; right:0; height:80px;
+      background:linear-gradient(transparent, var(--bg));
+    }
+    .auth-body {
+      flex:1; padding:8px 28px 40px;
+      display:flex; flex-direction:column; justify-content:flex-start;
+      position:relative; z-index:1; max-width:460px; width:100%; margin:0 auto;
+    }
+    .auth-logo-row { display:flex; align-items:center; gap:10px; margin-bottom:20px; }
+    .auth-wordmark {
+      font-family:'Syne', sans-serif; font-weight:800; font-size:22px;
+      letter-spacing:-.3px; color:var(--amber);
+    }
+    .logo-badge {
+      width:36px; height:36px; border-radius:10px;
+      background:var(--amber); display:flex; align-items:center;
+      justify-content:center;
+    }
+    .auth-headline {
+      font-family:'Syne', sans-serif; font-size:28px; font-weight:800;
+      line-height:1.15; color:var(--text); margin-bottom:6px;
+    }
+    .auth-sub { color:var(--text-mid); font-size:13px; line-height:1.65; margin-bottom:24px; }
+    .tabs {
+      display:flex; background:var(--surface); border:1.5px solid var(--border);
+      border-radius:var(--radius-md); padding:4px; margin-bottom:22px;
+    }
+    .tab {
+      flex:1; padding:9px; border:none; background:transparent;
+      color:var(--text-dim); font-family:'Inter', sans-serif;
+      font-size:13px; font-weight:600; border-radius:var(--radius-sm);
+      cursor:pointer; transition:all .2s;
+    }
+    .tab.on { background:var(--amber); color:#080C18; box-shadow:0 3px 10px var(--amber-mid); }
+    .otp-row { display:flex; gap:10px; }
+    .otp-inp {
+      flex:1; padding:13px 16px; background:var(--elevated); border:1.5px solid var(--border);
+      border-radius:var(--radius-md); color:var(--text);
+      font-family:'Space Mono', monospace; font-size:22px; font-weight:700;
+      text-align:center; outline:none; letter-spacing:8px; transition:border-color .2s;
+    }
+    .otp-inp:focus { border-color:var(--amber); box-shadow:0 0 0 3px var(--amber-dim); }
+    .auth-tnc { font-size:11px; color:var(--text-dim); text-align:center; margin-top:14px; line-height:1.6; }
+    .auth-tnc span { color:var(--amber); }
+    .topbar {
+      display:flex; align-items:center; justify-content:space-between;
+      padding:12px 18px; background:var(--surface);
+      border-bottom:1.5px solid var(--border);
+      position:sticky; top:0; z-index:50;
+    }
+    .topbar-brand { display:flex; align-items:center; gap:9px; }
+    .topbar-wordmark { font-family:'Syne', sans-serif; font-weight:800; font-size:18px; color:var(--amber); }
+    .user-pill {
+      display:flex; align-items:center; gap:9px; padding:5px 12px 5px 5px;
+      background:var(--elevated); border:1.5px solid var(--border);
+      border-radius:100px;
+    }
+    .user-av {
+      width:28px; height:28px; border-radius:50%;
+      background:var(--amber); color:#080C18;
+      display:flex; align-items:center; justify-content:center;
+      font-family:'Syne', sans-serif; font-weight:800; font-size:12px;
+    }
+    .user-nm { font-size:13px; font-weight:600; }
+    .map-wrap {
+      position:relative; height:240px; overflow:hidden;
+      border-bottom:1.5px solid var(--border);
+    }
+    .map-svg { width:100%; height:100%; display:block; background:var(--surface); }
+    .map-overlay {
+      position:absolute; bottom:12px; left:12px; right:12px;
+      background:rgba(8,12,24,.88); border:1.5px solid var(--border);
+      backdrop-filter:blur(10px); border-radius:var(--radius-md);
+      padding:11px 14px; display:flex; align-items:center; gap:12px;
+    }
+    .map-overlay-icon {
+      width:32px; height:32px; border-radius:9px; background:var(--amber-dim);
+      border:1px solid var(--amber-mid); flex-shrink:0;
+      display:flex; align-items:center; justify-content:center;
+    }
+    .loc-lbl { font-size:10px; font-weight:600; letter-spacing:.07em; text-transform:uppercase; color:var(--text-dim); }
+    .loc-val { font-size:13px; font-weight:600; margin-top:2px; line-height:1.35; }
+    .loc-coords { font-family:'Space Mono', monospace; font-size:10px; color:var(--text-dim); margin-top:3px; }
+    .loc-spinner {
+      width:14px; height:14px; border:2px solid var(--border);
+      border-top-color:var(--amber); border-radius:50%;
+      animation:spin .75s linear infinite; flex-shrink:0;
+    }
+    @keyframes spin { to { transform:rotate(360deg); } }
+    .loc-search-bar {
+      background:var(--surface); border-bottom:1.5px solid var(--border);
+      padding:10px 14px; display:flex; gap:8px;
+    }
+    .loc-search-inp {
+      flex:1; padding:9px 13px; background:var(--elevated); border:1.5px solid var(--border);
+      border-radius:var(--radius-sm); color:var(--text); font-family:'Inter', sans-serif;
+      font-size:13px; outline:none; transition:border-color .15s;
+    }
+    .loc-search-inp:focus { border-color:var(--border-hi); }
+    .loc-search-inp::placeholder { color:var(--text-dim); }
+    .loc-search-btn {
+      padding:9px 14px; background:var(--amber-dim); border:1.5px solid var(--amber-mid);
+      border-radius:var(--radius-sm); color:var(--amber); font-size:12px; font-weight:600;
+      cursor:pointer; transition:background .15s; white-space:nowrap;
+      font-family:'Inter', sans-serif;
+    }
+    .loc-search-btn:hover { background:var(--amber-mid); }
+    .panel { padding:20px 18px 0; max-width:520px; margin:0 auto; }
+    .sec-head {
+      font-size:11px; font-weight:600; letter-spacing:.09em;
+      color:var(--text-dim); text-transform:uppercase; margin-bottom:12px; margin-top:4px;
+    }
+    .svc-toggle {
+      display:flex; background:var(--surface); border:1.5px solid var(--border);
+      border-radius:var(--radius-md); padding:4px; margin-bottom:20px; gap:4px;
+    }
+    .svc-btn {
+      flex:1; padding:11px 8px; border:none; background:transparent;
+      color:var(--text-dim); font-family:'Syne', sans-serif;
+      font-size:13px; font-weight:800; border-radius:var(--radius-sm);
+      cursor:pointer; transition:all .2s; display:flex; align-items:center;
+      justify-content:center; gap:7px;
+    }
+    .svc-btn.on.fuel { background:var(--amber); color:#080C18; box-shadow:0 3px 12px var(--amber-mid); }
+    .svc-btn.on.ev   { background:var(--indigo); color:#080C18; box-shadow:0 3px 12px var(--indigo-dim); }
+    .ev-model-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:20px; }
+    .ev-model-card {
+      background:var(--surface); border:1.5px solid var(--border); border-radius:var(--radius-md);
+      padding:12px; cursor:pointer; transition:all .2s; position:relative; overflow:hidden;
+    }
+    .ev-model-card.on { border-color:var(--indigo); background:var(--indigo-dim); }
+    .ev-model-nm { font-size:13px; font-weight:600; }
+    .ev-model-port { font-size:11px; color:var(--text-dim); margin-top:3px; font-family:'Space Mono', monospace; }
+    .ev-model-card.on .ev-model-port { color:var(--indigo); }
+    .van-card.on { border-color:var(--indigo); }
+    .van-card.on::after { background:var(--indigo); }
+    .van-card .pump-sel.on-ev,
+    .van-card.on .pump-sel { background:var(--indigo); border-color:var(--indigo); }
+    .van-card .pump-meta.ev { color:var(--indigo); }
+    .fuel-row { display:flex; gap:10px; margin-bottom:20px; }
+    .fuel-card {
+      flex:1; padding:14px 10px; background:var(--surface); border:1.5px solid var(--border);
+      border-radius:var(--radius-md); cursor:pointer; text-align:center; transition:all .2s; position:relative; overflow:hidden;
+    }
+    .fuel-card::before { content:''; position:absolute; inset:0; background:var(--amber); opacity:0; transition:opacity .2s; }
+    .fuel-card.on { border-color:var(--amber); }
+    .fuel-card.on::before { opacity:.06; }
+    .fuel-badge {
+      display:inline-flex; align-items:center; justify-content:center;
+      width:36px; height:36px; border-radius:10px; margin:0 auto 8px;
+      position:relative; z-index:1;
+    }
+    .fuel-name { font-size:14px; font-weight:600; position:relative; z-index:1; }
+    .fuel-price { font-family:'Space Mono', monospace; font-size:12px; color:var(--text-mid); margin-top:4px; position:relative; z-index:1; }
+    .fuel-card.on .fuel-price { color:var(--amber); }
+    .fuel-tick {
+      position:absolute; top:8px; right:8px; width:18px; height:18px;
+      background:var(--amber); border-radius:50%;
+      display:flex; align-items:center; justify-content:center;
+      opacity:0; transition:opacity .2s; z-index:1;
+    }
+    .fuel-card.on .fuel-tick { opacity:1; }
+    .qty-wrap { display:flex; align-items:center; gap:10px; margin-bottom:10px; }
+    .qty-btn {
+      width:44px; height:44px; background:var(--elevated); border:1.5px solid var(--border);
+      border-radius:var(--radius-sm); color:var(--text); font-size:22px; cursor:pointer;
+      display:flex; align-items:center; justify-content:center;
+      transition:border-color .15s; user-select:none; flex-shrink:0;
+    }
+    .qty-btn:hover { border-color:var(--amber); }
+    .qty-val {
+      flex:1; padding:11px; background:var(--elevated); border:1.5px solid var(--border);
+      border-radius:var(--radius-sm); text-align:center;
+      font-family:'Space Mono', monospace; font-size:24px; font-weight:700; color:var(--amber);
+    }
+    .qty-unit { font-size:13px; font-weight:400; color:var(--text-dim); margin-left:3px; }
+    .qty-presets { display:flex; gap:7px; margin-bottom:20px; }
+    .qty-pre {
+      flex:1; padding:7px 4px; background:var(--elevated); border:1.5px solid var(--border);
+      border-radius:8px; color:var(--text-dim); font-size:12px; font-weight:600;
+      cursor:pointer; text-align:center; transition:all .15s; font-family:'Inter', sans-serif;
+    }
+    .qty-pre:hover { border-color:var(--amber-mid); color:var(--amber); }
+    .pump-card {
+      background:var(--surface); border:1.5px solid var(--border); border-radius:var(--radius-md);
+      padding:13px 14px; margin-bottom:9px; display:flex; align-items:center; gap:12px;
+      cursor:pointer; transition:border-color .2s, background .2s; position:relative; overflow:hidden;
+    }
+    .pump-card::after { content:''; position:absolute; inset:0; background:var(--amber); opacity:0; transition:opacity .2s; pointer-events:none; }
+    .pump-card.on { border-color:var(--amber); }
+    .pump-card.on::after { opacity:.03; }
+    .pump-ico {
+      width:40px; height:40px; border-radius:11px; background:var(--elevated);
+      border:1.5px solid var(--border); display:flex; align-items:center;
+      justify-content:center; flex-shrink:0;
+    }
+    .pump-name { font-size:14px; font-weight:600; }
+    .pump-addr { font-size:12px; color:var(--text-dim); margin-top:2px; }
+    .pump-meta { font-size:11px; font-weight:600; color:var(--amber); margin-top:4px; letter-spacing:.02em; }
+    .pump-sel {
+      width:20px; height:20px; border-radius:50%; border:1.5px solid var(--border);
+      margin-left:auto; flex-shrink:0; display:flex; align-items:center;
+      justify-content:center; transition:all .2s;
+    }
+    .pump-card.on .pump-sel { background:var(--amber); border-color:var(--amber); }
+    .veh-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:8px; margin-bottom:12px; }
+    .veh-btn {
+      padding:11px 4px; background:var(--surface); border:1.5px solid var(--border);
+      border-radius:var(--radius-sm); cursor:pointer; text-align:center; transition:all .2s;
+    }
+    .veh-btn.on { border-color:var(--amber); background:var(--amber-dim); }
+    .veh-ico { font-size:22px; margin-bottom:4px; display:block; }
+    .veh-lbl { font-size:10px; font-weight:600; color:var(--text-dim); letter-spacing:.03em; display:block; }
+    .veh-btn.on .veh-lbl { color:var(--amber); }
+    .veh-fields { display:flex; gap:9px; margin-bottom:20px; }
+    .veh-fields .inp { font-size:13px; padding:11px 13px; border-radius:var(--radius-sm); }
+    .price-card {
+      background:var(--surface); border:1.5px solid var(--border);
+      border-radius:var(--radius-lg); padding:18px; margin-bottom:18px;
+    }
+    .price-row { display:flex; justify-content:space-between; align-items:center; padding:5px 0; }
+    .price-lbl { font-size:13px; color:var(--text-mid); }
+    .price-val { font-size:13px; font-weight:600; font-family:'Space Mono', monospace; }
+    .price-div { height:1px; background:var(--border); margin:10px 0; }
+    .price-total-lbl { font-family:'Syne', sans-serif; font-size:14px; font-weight:800; }
+    .price-total-val { font-family:'Space Mono', monospace; font-size:20px; font-weight:700; color:var(--amber); }
+    .spacer-40 { height:40px; }
+    .modal-bg {
+      position:fixed; inset:0; background:rgba(0,0,0,.75);
+      display:flex; align-items:flex-end; justify-content:center;
+      z-index:100; animation:fadein .2s;
+    }
+    @keyframes fadein { from{opacity:0} to{opacity:1} }
+    .modal {
+      background:var(--surface); border-radius:22px 22px 0 0;
+      border:1.5px solid var(--border); border-bottom:none;
+      padding:24px 22px 44px; width:100%; max-width:520px;
+      animation:slideup .3s cubic-bezier(.34,1.2,.64,1);
+    }
+    @keyframes slideup { from{transform:translateY(40px);opacity:0} to{transform:translateY(0);opacity:1} }
+    .modal-pip { width:36px; height:3px; background:var(--border); border-radius:3px; margin:0 auto 22px; }
+    .modal-title { font-family:'Syne', sans-serif; font-size:19px; font-weight:800; margin-bottom:5px; }
+    .modal-sub { color:var(--text-mid); font-size:13px; line-height:1.6; margin-bottom:18px; }
+    .warn-box {
+      background:#F5A62310; border:1px solid #F5A62340;
+      border-left:3px solid var(--amber); border-radius:var(--radius-sm);
+      padding:12px 14px; margin-bottom:18px; display:flex; gap:10px;
+    }
+    .warn-txt { font-size:12px; color:#F5C070; line-height:1.55; }
+    .comp-opt {
+      background:var(--elevated); border:1.5px solid var(--border); border-radius:var(--radius-md);
+      padding:14px; margin-bottom:9px; cursor:pointer; transition:border-color .2s, background .2s;
+      display:flex; gap:12px; align-items:flex-start;
+    }
+    .comp-opt:hover { border-color:var(--border-hi); }
+    .comp-opt.on { border-color:var(--green); background:#22D07A08; }
+    .comp-radio {
+      width:18px; height:18px; border-radius:50%; border:2px solid var(--border);
+      flex-shrink:0; margin-top:2px; display:flex; align-items:center;
+      justify-content:center; transition:all .2s;
+    }
+    .comp-opt.on .comp-radio { background:var(--green); border-color:var(--green); }
+    .comp-radio-dot { width:7px; height:7px; background:#fff; border-radius:50%; }
+    .comp-opt-ttl { font-size:13px; font-weight:600; margin-bottom:3px; }
+    .comp-opt-sub { font-size:12px; color:var(--text-dim); line-height:1.5; }
+    .modal-actions { display:flex; gap:9px; margin-top:18px; }
+    .modal-btn-confirm {
+      flex:2; padding:13px;
+      background:var(--amber); border:none; border-radius:var(--radius-md); color:#080C18;
+      font-family:'Syne', sans-serif; font-size:14px; font-weight:800;
+      cursor:pointer; box-shadow:0 3px 14px var(--amber-mid); transition:all .2s;
+    }
+    .modal-btn-confirm:hover { box-shadow:0 5px 20px var(--amber-glow); }
+    .modal-btn-confirm:disabled { opacity:.4; cursor:not-allowed; box-shadow:none; }
+    .modal-btn-back {
+      flex:1; padding:13px; background:transparent; border:1.5px solid var(--border);
+      border-radius:var(--radius-md); color:var(--text-mid); font-family:'Inter', sans-serif;
+      font-size:13px; font-weight:600; cursor:pointer; transition:all .2s;
+    }
+    .modal-btn-back:hover { border-color:var(--border-hi); color:var(--text); }
+    .track-screen { min-height:100vh; background:var(--bg); max-width:520px; margin:0 auto; }
+    .track-top {
+      background:var(--surface); border-bottom:1.5px solid var(--border);
+      padding:18px 18px 16px; display:flex; align-items:center; gap:13px;
+    }
+    .track-badge {
+      width:42px; height:42px; border-radius:50%;
+      background:var(--green-dim); border:2px solid #22D07A55;
+      display:flex; align-items:center; justify-content:center; flex-shrink:0;
+      animation:popscale .4s cubic-bezier(.34,1.56,.64,1);
+    }
+    @keyframes popscale { from{transform:scale(0);opacity:0} to{transform:scale(1);opacity:1} }
+    .track-top-ttl { font-family:'Syne', sans-serif; font-size:18px; font-weight:800; }
+    .track-top-sub { font-size:13px; color:var(--text-mid); margin-top:2px; }
+    .track-body { padding:18px; }
+    .eta-card {
+      background:var(--surface); border:1.5px solid var(--border);
+      border-radius:var(--radius-lg); padding:20px; margin-bottom:12px;
+      display:flex; gap:18px; align-items:center;
+    }
+    .eta-num-wrap { text-align:center; flex-shrink:0; }
+    .eta-num { font-family:'Space Mono', monospace; font-size:52px; font-weight:700; color:var(--amber); line-height:1; }
+    .eta-unit-lbl { font-size:11px; color:var(--text-dim); margin-top:4px; font-weight:600; letter-spacing:.06em; text-transform:uppercase; }
+    .eta-vdiv { width:1.5px; background:var(--border); align-self:stretch; }
+    .eta-facts { flex:1; display:flex; flex-direction:column; gap:9px; }
+    .eta-fact { display:flex; justify-content:space-between; align-items:center; }
+    .eta-fact-lbl { font-size:11px; color:var(--text-dim); }
+    .eta-fact-val { font-size:12px; font-weight:600; font-family:'Space Mono', monospace; }
+    .pin-card {
+      background:linear-gradient(135deg, #0D1430, #091428);
+      border:1.5px solid #3D52A044; border-radius:var(--radius-lg);
+      padding:18px; margin-bottom:12px;
+      display:flex; align-items:center; justify-content:space-between; gap:12px;
+    }
+    .pin-eyebrow { font-size:10px; font-weight:600; letter-spacing:.08em; text-transform:uppercase; color:var(--indigo); }
+    .pin-hint { font-size:12px; color:#7B8FFF99; line-height:1.5; margin-top:4px; max-width:160px; }
+    .pin-digits { display:flex; gap:7px; }
+    .pin-d {
+      width:44px; height:52px; background:#06091A; border:2px solid var(--indigo);
+      border-radius:10px; display:flex; align-items:center; justify-content:center;
+      font-family:'Space Mono', monospace; font-size:22px; font-weight:700; color:var(--indigo);
+      box-shadow:0 0 10px #7B8FFF18;
+    }
+    .driver-card {
+      background:var(--surface); border:1.5px solid var(--border); border-radius:var(--radius-md);
+      padding:14px 16px; margin-bottom:12px; display:flex; align-items:center; gap:13px;
+    }
+    .driver-av {
+      width:46px; height:46px; border-radius:50%;
+      background:linear-gradient(135deg, #1D4ED8, #6D28D9);
+      display:flex; align-items:center; justify-content:center; font-size:20px; flex-shrink:0;
+    }
+    .driver-nm { font-size:14px; font-weight:600; }
+    .driver-veh { font-size:12px; color:var(--text-dim); margin-top:2px; }
+    .call-btn {
+      margin-left:auto; width:38px; height:38px; background:var(--green-dim);
+      border:1.5px solid #22D07A44; border-radius:50%;
+      display:flex; align-items:center; justify-content:center;
+      font-size:16px; text-decoration:none; flex-shrink:0; transition:background .15s;
+    }
+    .call-btn:hover { background:#22D07A33; }
+    .timeline { margin-bottom:14px; }
+    .tl-item { display:flex; gap:13px; align-items:flex-start; padding-bottom:18px; position:relative; }
+    .tl-item:not(:last-child)::after {
+      content:''; position:absolute; left:13px; top:28px; bottom:0; width:1.5px; background:var(--border);
+    }
+    .tl-dot {
+      width:26px; height:26px; border-radius:50%; flex-shrink:0;
+      display:flex; align-items:center; justify-content:center; font-size:12px;
+    }
+    .tl-dot.done   { background:var(--green-dim); border:1.5px solid #22D07A66; }
+    .tl-dot.active { background:var(--amber-dim); border:1.5px solid var(--amber); animation:tl-pulse 1.5s ease-in-out infinite; }
+    .tl-dot.wait   { background:var(--elevated); border:1.5px solid var(--border); }
+    @keyframes tl-pulse { 0%,100%{box-shadow:0 0 0 0 #F5A62340} 50%{box-shadow:0 0 0 5px #F5A62300} }
+    .tl-txt { padding-top:3px; }
+    .tl-ttl { font-size:13px; font-weight:600; }
+    .tl-sub { font-size:11px; color:var(--text-dim); margin-top:2px; }
+    .fb-screen { min-height:100vh; background:var(--bg); max-width:520px; margin:0 auto; }
+    .fb-top {
+      background:var(--surface); border-bottom:1.5px solid var(--border);
+      padding:24px 18px; text-align:center;
+    }
+    .fb-top-badge { font-size:40px; margin-bottom:10px; display:block; }
+    .fb-top-ttl { font-family:'Syne', sans-serif; font-size:22px; font-weight:800; }
+    .fb-top-sub { font-size:13px; color:var(--text-mid); margin-top:4px; }
+    .fb-body { padding:18px; }
+    .fb-card {
+      background:var(--surface); border:1.5px solid var(--border);
+      border-radius:var(--radius-lg); padding:18px; margin-bottom:14px;
+    }
+    .fb-card-ttl { font-size:15px; font-weight:600; margin-bottom:3px; display:flex; align-items:center; gap:8px; }
+    .fb-card-sub { font-size:12px; color:var(--text-dim); margin-bottom:14px; }
+    .star-row { display:flex; gap:8px; margin-bottom:14px; }
+    .star {
+      font-size:28px; cursor:pointer; transition:transform .12s, opacity .12s;
+      opacity:.25; filter:grayscale(1);
+    }
+    .star.lit { opacity:1; filter:none; }
+    .star:hover { opacity:.8; filter:none; transform:scale(1.08); }
+    .tags { display:flex; flex-wrap:wrap; gap:7px; margin-bottom:14px; }
+    .tag {
+      padding:5px 13px; background:var(--elevated); border:1.5px solid var(--border);
+      border-radius:100px; font-size:12px; font-weight:600; color:var(--text-dim);
+      cursor:pointer; transition:all .15s;
+    }
+    .tag.on { background:var(--amber-dim); border-color:var(--amber-mid); color:var(--amber); }
+    .fb-ta {
+      width:100%; padding:11px 13px; background:var(--elevated); border:1.5px solid var(--border);
+      border-radius:var(--radius-sm); color:var(--text); font-family:'Inter', sans-serif;
+      font-size:13px; outline:none; resize:vertical; min-height:68px; line-height:1.5;
+      transition:border-color .2s;
+    }
+    .fb-ta:focus { border-color:var(--border-hi); }
+    .fb-ta::placeholder { color:var(--text-dim); }
+    .done-screen {
+      min-height:100vh; background:var(--bg); max-width:520px; margin:0 auto;
+      display:flex; flex-direction:column; align-items:center; justify-content:center;
+      padding:40px 28px; text-align:center;
+    }
+    .done-circle {
+      width:88px; height:88px; border-radius:50%;
+      background:var(--green-dim); border:2px solid #22D07A44;
+      display:flex; align-items:center; justify-content:center;
+      font-size:38px; margin-bottom:20px;
+      animation:popscale .45s cubic-bezier(.34,1.56,.64,1);
+    }
+    .done-ttl { font-family:'Syne', sans-serif; font-size:24px; font-weight:800; margin-bottom:8px; }
+    .done-sub { color:var(--text-mid); font-size:14px; line-height:1.65; max-width:270px; margin-bottom:32px; }
+    .back-portfolio {
+      position:fixed; top:12px; left:12px; z-index:100;
+      background:rgba(14,21,37,0.85); border:1.5px solid var(--border);
+      color:var(--text); padding:6px 14px; border-radius:999px;
+      font-size:12px; font-weight:600; text-decoration:none; backdrop-filter:blur(8px);
+      transition:border-color .2s; display:flex; align-items:center; gap:6px;
+    }
+    .back-portfolio:hover { border-color:var(--amber); color:var(--amber); }
+  </style>
+</head>
+<body>
+<a href="index.html" class="back-portfolio">← Back to Portfolio</a>
+<div id="root"></div>
+<script type="text/babel">
+const { useState, useEffect, useRef } = React;
+
+const PUMPS_DATA = [
+  { id:1, name:"HP Petrol Pump",     brand:"HPCL", addr:"Park Street, Kolkata",  lat:22.5697, lng:88.3697, rating:4.8 },
+  { id:2, name:"Indian Oil Station", brand:"IOCL", addr:"Camac Street, Kolkata", lat:22.5645, lng:88.3705, rating:4.6 },
+  { id:3, name:"BPCL Fuel Station",  brand:"BPCL", addr:"Esplanade, Kolkata",    lat:22.5567, lng:88.3639, rating:4.5 },
+  { id:4, name:"Shell Fuel Stop",    brand:"Shell", addr:"Ballygunge, Kolkata",  lat:22.5196, lng:88.3736, rating:4.7 },
+  { id:5, name:"Bharat Petroleum",   brand:"BP",   addr:"Salt Lake, Kolkata",    lat:22.5728, lng:88.4056, rating:4.4 },
+  { id:6, name:"Jio-bp Station",     brand:"Jio-bp", addr:"Dakshineswar, Kolkata", lat:22.6148, lng:88.3608, rating:4.9 },
+];
+
+function calcDistance(lat1, lng1, lat2, lng2) {
+  const R = 6371;
+  const dLat = (lat2 - lat1) * Math.PI / 180;
+  const dLng = (lng2 - lng1) * Math.PI / 180;
+  const a = 
+    Math.sin(dLat/2) * Math.sin(dLat/2) +
+    Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+    Math.sin(dLng/2) * Math.sin(dLng/2);
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+  return R * c;
+}
+
+function getNearbyPumps(userLat, userLng) {
+  const pumpsWithDist = PUMPS_DATA.map(pump => {
+    const dist = calcDistance(parseFloat(userLat), parseFloat(userLng), pump.lat, pump.lng);
+    const eta = Math.ceil(dist * 3 + 2);
+    return { ...pump, dist: dist.toFixed(1), eta: `${eta} min` };
+  });
+  return pumpsWithDist.sort((a, b) => parseFloat(a.dist) - parseFloat(b.dist)).slice(0, 3);
+}
+const PRICES = { petrol:103.94, diesel:90.76 };
+const VEHICLES = [
+  { id:"sedan",   icon:"🚗", label:"Sedan" },
+  { id:"suv",     icon:"🚙", label:"SUV" },
+  { id:"hatch",   icon:"🚘", label:"Hatchback" },
+  { id:"bike",    icon:"🛵", label:"2-Wheeler" },
+];
+function mkPin() { return String(Math.floor(1000 + Math.random()*9000)); }
+
+const VANS_DATA = [
+  { id:1, name:"E-Charge Mobile Unit 01", brand:"E-Charge", addr:"Park Street, Kolkata",   lat:22.5697, lng:88.3697, rating:4.9 },
+  { id:2, name:"E-Charge Mobile Unit 02", brand:"E-Charge", addr:"Camac Street, Kolkata",  lat:22.5645, lng:88.3705, rating:4.7 },
+  { id:3, name:"E-Charge Mobile Unit 03", brand:"E-Charge", addr:"Esplanade, Kolkata",     lat:22.5567, lng:88.3639, rating:4.6 },
+  { id:4, name:"E-Charge Mobile Unit 04", brand:"E-Charge", addr:"Salt Lake, Kolkata",     lat:22.5728, lng:88.4056, rating:4.8 },
+  { id:5, name:"E-Charge Mobile Unit 05", brand:"E-Charge", addr:"Connaught Place, Delhi", lat:28.6315, lng:77.2167, rating:4.8 },
+  { id:6, name:"E-Charge Mobile Unit 06", brand:"E-Charge", addr:"Bandra, Mumbai",         lat:19.0596, lng:72.8295, rating:4.7 },
+  { id:7, name:"E-Charge Mobile Unit 07", brand:"E-Charge", addr:"Indiranagar, Bengaluru", lat:12.9716, lng:77.6412, rating:4.9 },
+  { id:8, name:"E-Charge Mobile Unit 08", brand:"E-Charge", addr:"T Nagar, Chennai",       lat:13.0418, lng:80.2341, rating:4.6 },
+  { id:9, name:"E-Charge Mobile Unit 09", brand:"E-Charge", addr:"Banjara Hills, Hyderabad", lat:17.4126, lng:78.4482, rating:4.8 },
+  { id:10,name:"E-Charge Mobile Unit 10", brand:"E-Charge", addr:"Koregaon Park, Pune",    lat:18.5362, lng:73.8938, rating:4.7 },
+];
+
+function getNearbyVans(userLat, userLng) {
+  const withDist = VANS_DATA.map(v => {
+    const dist = calcDistance(parseFloat(userLat), parseFloat(userLng), v.lat, v.lng);
+    const eta = Math.ceil(dist * 3 + 2);
+    return { ...v, dist: dist.toFixed(1), eta: `${eta} min` };
+  });
+  return withDist.sort((a, b) => parseFloat(a.dist) - parseFloat(b.dist)).slice(0, 3);
+}
+const PRICE_PER_KWH = 21.5;
+const EV_MODELS = [
+  { id:"tata-nexon",  label:"Tata Nexon EV",     port:"CCS2" },
+  { id:"mg-zs",       label:"MG ZS EV",          port:"CCS2" },
+  { id:"hyundai-ko",  label:"Hyundai Kona",      port:"CCS2" },
+  { id:"tata-tigor",  label:"Tata Tigor EV",     port:"GB/T" },
+  { id:"mahindra-xu", label:"Mahindra XUV400",   port:"CCS2" },
+  { id:"ola-scooter", label:"Ola S1 (2-Wheeler)",port:"Type-2 AC" },
+];
+
+function MapCanvas({ located }) {
+  return (
+    <svg className="map-svg" viewBox="0 0 400 240" xmlns="http://www.w3.org/2000/svg">
+      <rect width="400" height="240" fill="#0E1525"/>
+      {[0,1,2,3,4].map(r => [0,1,2,3,4,5].map(c => (
+        <rect key={`${r}-${c}`} x={c*66+3} y={r*48+3} width={60} height={42} rx="2" fill="#0B1122" opacity=".6"/>
+      )))}
+      {[0,48,96,144,192,240].map((y,i) => (
+        <g key={i}>
+          <rect x="0" y={y-1} width="400" height="10" fill="#162035"/>
+          {[0,33,66,99,132,165,198,231,264,297,330,363].map((x,j)=>(
+            <rect key={j} x={x} y={y+3} width="18" height="2" rx="1" fill="#2A4468" opacity=".7"/>
+          ))}
+        </g>
+      ))}
+      {[0,66,132,198,264,330,396].map((x,i) => (
+        <g key={i}>
+          <rect x={x-1} y="0" width="10" height="240" fill="#162035"/>
+          {[0,22,44,66,88,110,132,154,176,198,220].map((y,j)=>(
+            <rect key={j} x={x+3} y={y} width="2" height="12" rx="1" fill="#2A4468" opacity=".7"/>
+          ))}
+        </g>
+      ))}
+      <radialGradient id="mg" cx="50%" cy="50%" r="50%">
+        <stop offset="0%" stopColor="#F5A623" stopOpacity="0.06"/>
+        <stop offset="100%" stopColor="#F5A623" stopOpacity="0"/>
+      </radialGradient>
+      <rect width="400" height="240" fill="url(#mg)"/>
+      {located && <>
+        <circle cx="130" cy="88"  r="6" fill="#F5A623" opacity=".9"/>
+        <circle cx="130" cy="88"  r="10" fill="#F5A623" opacity=".2"/>
+        <circle cx="250" cy="56"  r="6" fill="#F5A623" opacity=".9"/>
+        <circle cx="250" cy="56"  r="10" fill="#F5A623" opacity=".2"/>
+        <circle cx="295" cy="148" r="6" fill="#F5A623" opacity=".9"/>
+        <circle cx="295" cy="148" r="10" fill="#F5A623" opacity=".2"/>
+        <circle cx="198" cy="120" r="16" fill="#F5A623" opacity=".12"/>
+        <circle cx="198" cy="120" r="8"  fill="#F5A623" opacity=".25"/>
+        <circle cx="198" cy="120" r="4"  fill="#F5A623"/>
+        <line x1="192" y1="120" x2="186" y2="120" stroke="#F5A623" strokeWidth="1.5" opacity=".5"/>
+        <line x1="204" y1="120" x2="210" y2="120" stroke="#F5A623" strokeWidth="1.5" opacity=".5"/>
+        <line x1="198" y1="114" x2="198" y2="108" stroke="#F5A623" strokeWidth="1.5" opacity=".5"/>
+        <line x1="198" y1="126" x2="198" y2="132" stroke="#F5A623" strokeWidth="1.5" opacity=".5"/>
+      </>}
+      {!located && <>
+        <circle cx="198" cy="120" r="20" fill="none" stroke="#F5A623" strokeWidth="1.5" opacity=".3">
+          <animate attributeName="r" values="10;24;10" dur="2s" repeatCount="indefinite"/>
+          <animate attributeName="opacity" values=".5;0;.5" dur="2s" repeatCount="indefinite"/>
+        </circle>
+        <circle cx="198" cy="120" r="5" fill="#F5A623" opacity=".6"/>
+      </>}
+    </svg>
+  );
+}
+
+function AuthHero() {
+  return (
+    <svg className="auth-hero-svg" viewBox="0 0 400 220" xmlns="http://www.w3.org/2000/svg">
+      <rect width="400" height="220" fill="#0E1525"/>
+      {[0,1,2,3,4].map(r=>[0,1,2,3,4,5].map(c=>(
+        <rect key={`${r}-${c}`} x={c*66+3} y={r*44+3} width={60} height={38} rx="2" fill="#0B1122" opacity=".7"/>
+      )))}
+      {[0,44,88,132,176,220].map((y,i)=>(
+        <rect key={i} x="0" y={y-1} width="400" height="9" fill="#162035"/>
+      ))}
+      {[0,66,132,198,264,330,396].map((x,i)=>(
+        <rect key={i} x={x-1} y="0" width="9" height="220" fill="#162035"/>
+      ))}
+      <rect x="0" y="42" width="24" height="6" rx="3" fill="#F5A623" opacity=".7">
+        <animateTransform attributeName="transform" type="translate" from="0,0" to="420,0" dur="4s" repeatCount="indefinite"/>
+      </rect>
+      <rect x="0" y="85" width="24" height="6" rx="3" fill="#F5A623" opacity=".5">
+        <animateTransform attributeName="transform" type="translate" from="-100,0" to="420,0" dur="5.5s" repeatCount="indefinite"/>
+      </rect>
+      <rect x="400" y="130" width="32" height="6" rx="3" fill="#7B8FFF" opacity=".55">
+        <animateTransform attributeName="transform" type="translate" from="0,0" to="-480,0" dur="6s" repeatCount="indefinite"/>
+      </rect>
+      <rect x="129" y="0" width="6" height="20" rx="3" fill="#22D07A" opacity=".6">
+        <animateTransform attributeName="transform" type="translate" from="0,-40" to="0,280" dur="5s" repeatCount="indefinite"/>
+      </rect>
+      <radialGradient id="ahg" cx="50%" cy="60%" r="50%">
+        <stop offset="0%" stopColor="#F5A623" stopOpacity=".08"/>
+        <stop offset="100%" stopColor="#F5A623" stopOpacity="0"/>
+      </radialGradient>
+      <rect width="400" height="220" fill="url(#ahg)"/>
+      <rect x="140" y="82" width="120" height="56" rx="12" fill="#080C18" fillOpacity=".75"/>
+      <text x="200" y="105" textAnchor="middle" fontFamily="'Syne',sans-serif" fontWeight="800" fontSize="13" fill="#F5A623" letterSpacing="1">E-FUEL</text>
+      <text x="200" y="126" textAnchor="middle" fontFamily="'Inter',sans-serif" fontWeight="400" fontSize="11" fill="#4A6FA5">Emergency Fuel Delivery</text>
+    </svg>
+  );
+}
+
+function Stars({ val, onChange }) {
+  const [hov, setHov] = useState(0);
+  return (
+    <div className="star-row">
+      {[1,2,3,4,5].map(n=>(
+        <span key={n} className={`star ${n<=(hov||val)?'lit':''}`}
+          onClick={()=>onChange(n)}
+          onMouseEnter={()=>setHov(n)} onMouseLeave={()=>setHov(0)}>★</span>
+      ))}
+    </div>
+  );
+}
+
+function PesoModal({ onConfirm, onCancel }) {
+  const [sel, setSel] = useState(null);
+  return (
+    <div className="modal-bg">
+      <div className="modal">
+        <div className="modal-pip"/>
+        <div style={{display:'flex',alignItems:'center',gap:9,marginBottom:6}}>
+          <span style={{fontSize:22}}>🛡️</span>
+          <div className="modal-title">Safety check required</div>
+        </div>
+        <div className="modal-sub">
+          Under the Petroleum Act of India, fuel must be transported in PESO-certified, non-static containers only.
+        </div>
+        <div className="warn-box">
+          <span style={{fontSize:16,flexShrink:0}}>⚠️</span>
+          <div className="warn-txt">
+            Fuel cannot be delivered into plastic bottles or unapproved containers. Please confirm your compliance before we dispatch.
+          </div>
+        </div>
+        {[
+          { id:'own',  icon:'✅', ttl:'I have a PESO-certified container', sub:'I carry a compliant, non-static fuel canister that meets PESO standards.' },
+          { id:'get',  icon:'🪣', ttl:'Bring a certified canister for me',  sub:'The delivery agent will provision a PESO-approved canister on arrival. A small provisioning fee applies.' },
+        ].map(opt=>(
+          <div key={opt.id} className={`comp-opt ${sel===opt.id?'on':''}`} onClick={()=>setSel(opt.id)}>
+            <div className="comp-radio">{sel===opt.id&&<div className="comp-radio-dot"/>}</div>
+            <div>
+              <div className="comp-opt-ttl">{opt.icon} {opt.ttl}</div>
+              <div className="comp-opt-sub">{opt.sub}</div>
+            </div>
+          </div>
+        ))}
+        <div className="modal-actions">
+          <button className="modal-btn-back" onClick={onCancel}>Back</button>
+          <button className="modal-btn-confirm" disabled={!sel} onClick={()=>sel&&onConfirm(sel)}>
+            Confirm & Pay →
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function EvGateModal({ onConfirm, onCancel }) {
+  const [parked, setParked] = useState(false);
+  const [portOk, setPortOk] = useState(false);
+  const ready = parked && portOk;
+  return (
+    <div className="modal-bg">
+      <div className="modal">
+        <div className="modal-pip"/>
+        <div style={{display:'flex',alignItems:'center',gap:9,marginBottom:6}}>
+          <span style={{fontSize:22}}>🛡️</span>
+          <div className="modal-title">Safety check required</div>
+        </div>
+        <div className="modal-sub">
+          Before we dispatch a mobile charging unit, please confirm your vehicle is safely positioned for the delivery agent.
+        </div>
+        <div className="warn-box">
+          <span style={{fontSize:16,flexShrink:0}}>⚠️</span>
+          <div className="warn-txt">
+            Charging cannot begin unless the vehicle is parked safely and the port is reachable without moving the vehicle.
+          </div>
+        </div>
+        <div className={`comp-opt ${parked?'on':''}`} onClick={()=>setParked(p=>!p)}>
+          <div className="comp-radio">{parked&&<div className="comp-radio-dot"/>}</div>
+          <div>
+            <div className="comp-opt-ttl">🅿️ My vehicle is parked safely on the shoulder</div>
+            <div className="comp-opt-sub">Clear of moving traffic, hazard lights on, away from the carriageway.</div>
+          </div>
+        </div>
+        <div className={`comp-opt ${portOk?'on':''}`} onClick={()=>setPortOk(p=>!p)}>
+          <div className="comp-radio">{portOk&&<div className="comp-radio-dot"/>}</div>
+          <div>
+            <div className="comp-opt-ttl">🔌 Charging port is easily accessible</div>
+            <div className="comp-opt-sub">The agent can reach the port without you needing to move the vehicle.</div>
+          </div>
+        </div>
+        <div className="modal-actions">
+          <button className="modal-btn-back" onClick={onCancel}>Back</button>
+          <button className="modal-btn-confirm" disabled={!ready} onClick={()=>ready&&onConfirm()}>
+            Confirm & Pay →
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function TrackScreen({ order, onReview }) {
+  const [elapsed, setElapsed] = useState(0);
+  const eta = 38;
+  const remaining = Math.max(0, eta - Math.floor(elapsed/60));
+
+  useEffect(()=>{
+    const t = setInterval(()=>setElapsed(e=>e+1),1000);
+    return ()=>clearInterval(t);
+  },[]);
+
+  const isEv = order.service==='ev';
+  const steps = [
+    { icon:'✓', lbl:'Order confirmed',          sub:'Payment received',         state:'done' },
+    { icon: isEv?'🔌':'⛽', lbl: isEv?'Unit prepping charge cable':'Station preparing fuel',   sub:elapsed>=60?'Ready to dispatch':(isEv?'Awaiting unit':'Awaiting station'),  state:elapsed>=60?'done':'wait' },
+    { icon:'🚐', lbl:'Agent en route to you',    sub:elapsed>=300?'Nearby':(isEv?'Dispatched from unit':'Dispatched from station'),  state:elapsed>=300?'done':elapsed>=180?'active':'wait' },
+    { icon:'📍', lbl:`Arriving in ~${remaining} min`, sub:'Almost there',        state:elapsed>=300?'active':'wait' },
+  ];
+
+  return (
+    <div className="track-screen">
+      <div className="track-top">
+        <div className="track-badge"><span style={{fontSize:20}}>✓</span></div>
+        <div>
+          <div className="track-top-ttl">Order confirmed</div>
+          <div className="track-top-sub">
+            {order.service==='ev'
+              ? <>{order.qty} kWh charge · {order.pumpName} · ₹{order.total}</>
+              : <>{order.qty}L {order.fuelType} · {order.pumpName} · ₹{order.total}</>}
+          </div>
+        </div>
+      </div>
+      <div className="track-body">
+        <div className="eta-card">
+          <div className="eta-num-wrap">
+            <div className="eta-num">{remaining}</div>
+            <div className="eta-unit-lbl">min away</div>
+          </div>
+          <div className="eta-vdiv"/>
+          <div className="eta-facts">
+            <div className="eta-fact"><span className="eta-fact-lbl">Order total</span><span className="eta-fact-val">₹{order.total}</span></div>
+            <div className="eta-fact"><span className="eta-fact-lbl">{order.service==='ev'?'Charging unit':'Station'}</span><span className="eta-fact-val">{order.pumpName}</span></div>
+            <div className="eta-fact"><span className="eta-fact-lbl">Vehicle</span><span className="eta-fact-val">{order.vehicle||'—'}</span></div>
+          </div>
+        </div>
+        <div className="pin-card">
+          <div>
+            <div className="pin-eyebrow">🔐 Delivery PIN</div>
+            <div className="pin-hint">Share with the agent when they arrive to confirm delivery.</div>
+          </div>
+          <div className="pin-digits">
+            {order.pin.split('').map((d,i)=><div key={i} className="pin-d">{d}</div>)}
+          </div>
+        </div>
+        <div className="driver-card">
+          <div className="driver-av">🧑‍✈️</div>
+          <div>
+            <div className="driver-nm">Ramesh Kumar</div>
+            <div className="driver-veh">{isEv?'Mobile Charging Van':'Porter Van'} · DL 4C AB 1234</div>
+          </div>
+          <a href="tel:+919876543210" className="call-btn">📞</a>
+        </div>
+        <div className="sec-head" style={{marginTop:4}}>Live status</div>
+        <div className="timeline">
+          {steps.map((s,i)=>(
+            <div key={i} className="tl-item">
+              <div className={`tl-dot ${s.state}`}>
+                {s.state==='done'&&<span style={{color:'var(--green)',fontSize:11}}>✓</span>}
+                {s.state==='active'&&<span style={{fontSize:11}}>●</span>}
+                {s.state==='wait'&&<span style={{fontSize:9,color:'var(--text-dim)'}}>○</span>}
+              </div>
+              <div className="tl-txt">
+                <div className="tl-ttl" style={{color:s.state==='wait'?'var(--text-dim)':undefined}}>{s.lbl}</div>
+                <div className="tl-sub">{s.sub}</div>
+              </div>
+            </div>
+          ))}
+        </div>
+        <button className="btn-primary" onClick={onReview}>Mark as delivered & rate →</button>
+      </div>
+    </div>
+  );
+}
+
+function FeedbackScreen({ order, onDone }) {
+  const isEv = order.service==='ev';
+  const [agR, setAgR]   = useState(0);
+  const [stR, setStR]   = useState(0);
+  const [agT, setAgT]   = useState([]);
+  const [stT, setStT]   = useState([]);
+  const [cmt, setCmt]   = useState('');
+  const [done, setDone] = useState(false);
+  const toggleT = (t,list,set) => set(p=>p.includes(t)?p.filter(x=>x!==t):[...p,t]);
+  const agTags = ['Safe handling','On time','Courteous','Delayed','Helpful'];
+  const stTags = isEv ? ['Fast charge','Accurate kWh','Fast dispatch','Reliable','Overpriced'] : ['Good quality','Accurate volume','Fast dispatch','Reliable','Overpriced'];
+
+  if (done) return (
+    <div className="done-screen">
+      <div className="done-circle">🙏</div>
+      <div className="done-ttl">Thank you!</div>
+      <div className="done-sub">Your feedback helps improve delivery quality across India.</div>
+      <button className="btn-primary" style={{maxWidth:300}} onClick={onDone}>Book again →</button>
+    </div>
+  );
+
+  return (
+    <div className="fb-screen">
+      <div className="fb-top">
+        <span className="fb-top-badge">{isEv?'🔌':'⛽'}</span>
+        <div className="fb-top-ttl">{isEv?'Vehicle charged!':'Fuel delivered!'}</div>
+      </div>
+      <div className="fb-body">
+        <div className="fb-card">
+          <div className="fb-card-ttl">🧑‍✈️ Delivery agent</div>
+          <Stars val={agR} onChange={setAgR}/>
+          <div className="tags">{agTags.map(t=><div key={t} className={`tag ${agT.includes(t)?'on':''}`} onClick={()=>toggleT(t,agT,setAgT)}>{t}</div>)}</div>
+        </div>
+        <div className="fb-card">
+          <div className="fb-card-ttl">{isEv?'🔌 Charging unit':'⛽ Fuel station'}</div>
+          <Stars val={stR} onChange={setStR}/>
+          <div className="tags">{stTags.map(t=><div key={t} className={`tag ${stT.includes(t)?'on':''}`} onClick={()=>toggleT(t,stT,setStT)}>{t}</div>)}</div>
+        </div>
+        <button className="btn-primary" disabled={agR===0||stR===0} onClick={()=>setDone(true)}>Submit feedback →</button>
+        <button className="btn-ghost" style={{marginTop:9}} onClick={onDone}>Skip for now</button>
+      </div>
+    </div>
+  );
+}
+
+function App() {
+  const [screen,   setScreen]   = useState('auth');
+  const [authTab,  setAuthTab]  = useState('signup');
+  const [form,     setForm]     = useState({name:'',contact:'',otp:''});
+  const [otpSent,  setOtpSent]  = useState(false);
+  const [otpTimer, setOtpTimer] = useState(0);
+  const [alert,    setAlert]    = useState(null);
+  const [user,     setUser]     = useState(null);
+  const [service,  setService]  = useState('fuel');
+  const [fuel,     setFuel]     = useState('petrol');
+  const [qty,      setQty]      = useState(5);
+  const [kwh,      setKwh]      = useState(20);
+  const [evModel,  setEvModel]  = useState('tata-nexon');
+  const [pump,     setPump]     = useState(1);
+  const [van,      setVan]      = useState(1);
+  const [loc,      setLoc]      = useState(null);
+  const [locating, setLocating] = useState(false);
+  const [manSrch,  setManSrch]  = useState('');
+  const [nearbyPumps, setNearbyPumps] = useState([]);
+  const [nearbyVans,  setNearbyVans]  = useState([]);
+  const [vehType,  setVehType]  = useState('sedan');
+  const [vehClr,   setVehClr]   = useState('');
+  const [vehReg,   setVehReg]   = useState('');
+  const [showPeso, setShowPeso] = useState(false);
+  const [order,    setOrder]    = useState(null);
+  const tmr = useRef(null);
+
+  useEffect(()=>{
+    if(otpTimer>0){ tmr.current=setTimeout(()=>setOtpTimer(t=>t-1),1000); }
+    return ()=>clearTimeout(tmr.current);
+  },[otpTimer]);
+
+  useEffect(()=>{
+    if(screen!=='booking') return;
+    setLocating(true);
+    const settleLoc = (latStr, lngStr, addr) => {
+      setLoc({lat:latStr,lng:lngStr,addr});
+      const pumps = getNearbyPumps(latStr, lngStr);
+      setNearbyPumps(pumps);
+      if(pumps.length > 0) setPump(pumps[0].id);
+      const vans = getNearbyVans(latStr, lngStr);
+      setNearbyVans(vans);
+      if(vans.length > 0) setVan(vans[0].id);
+    };
+    settleLoc('22.57264','88.36389','Park Street, Kolkata');
+    setLocating(false);
+  },[screen]);
+
+  const switchTab = t=>{ setAuthTab(t); setOtpSent(false); setAlert(null); setForm({name:'',contact:'',otp:''}); };
+  const sendOtp = ()=>{
+    if(!form.contact.trim()){ setAlert({t:'err',m:'Enter your mobile number.'}); return; }
+    if(authTab==='signup'&&!form.name.trim()){ setAlert({t:'err',m:'Enter your full name.'}); return; }
+    setAlert({t:'ok',m:`OTP sent to ${form.contact}`}); setOtpSent(true); setOtpTimer(30);
+  };
+  const doAuth = ()=>{
+    if(!form.otp||form.otp.length<4){ setAlert({t:'err',m:'Enter the 4-digit OTP to continue.'}); return; }
+    setUser({name:authTab==='signup'?form.name:'User',contact:form.contact}); setScreen('booking');
+  };
+
+  const selPump  = nearbyPumps.find(p=>p.id===pump) || nearbyPumps[0];
+  const selVan   = nearbyVans.find(v=>v.id===van) || nearbyVans[0];
+  const selProvider = service==='ev' ? selVan : selPump;
+  const fuelCost = service==='ev' ? kwh * PRICE_PER_KWH : qty * PRICES[fuel];
+  const distanceKm = selProvider ? parseFloat(selProvider.dist) : 1;
+  const delFee   = Math.round(40 + distanceKm * 15);
+  const total    = fuelCost + delFee;
+  const selModel = EV_MODELS.find(m=>m.id===evModel);
+
+  const confirmGate = (container)=>{
+    const veh = VEHICLES.find(v=>v.id===vehType);
+    const vehDesc = [veh?.label, vehClr, vehReg].filter(Boolean).join(' · ');
+    if(service==='ev'){
+      setOrder({ pin:mkPin(), service:'ev', qty:kwh, evModel:selModel?.label, portType:selModel?.port, pumpName:selProvider?.brand||'—', total:total.toFixed(0), vehicle:vehDesc });
+    } else {
+      setOrder({ pin:mkPin(), service:'fuel', qty, fuelType:fuel, pumpName:selProvider?.brand||'—', total:total.toFixed(0), container, vehicle:vehDesc });
+    }
+    setShowPeso(false); setScreen('tracking');
+  };
+
+  if(screen==='auth') return (
+    <div className="screen-auth">
+      <div className="auth-hero"><AuthHero/></div>
+      <div className="auth-body">
+        <div className="auth-logo-row">
+          <div className="logo-badge">
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+              <path d="M10 2C7 2 4 5 4 8.5c0 4.5 6 9.5 6 9.5s6-5 6-9.5C16 5 13 2 10 2zm0 9a2.5 2.5 0 110-5 2.5 2.5 0 010 5z" fill="#080C18"/>
+            </svg>
+          </div>
+          <span className="auth-wordmark">E-Fuel</span>
+        </div>
+        <div className="auth-headline">
+          {authTab==='signup'?'Fuel delivered,\nwherever you are.':'Welcome back.'}
+        </div>
+        <div className="auth-sub">
+          {authTab==='signup'
+            ? 'Emergency fuel delivery to your GPS location — across India, within 45 minutes.'
+            : 'Sign in to track your delivery in real time.'}
+        </div>
+        <div className="tabs">
+          <button className={`tab ${authTab==='signup'?'on':''}`} onClick={()=>switchTab('signup')}>Create account</button>
+          <button className={`tab ${authTab==='login'?'on':''}`}  onClick={()=>switchTab('login')}>Sign in</button>
+        </div>
+        {alert&&<div className={`alert alert-${alert.t==='ok'?'ok':'err'}`}>{alert.t==='ok'?'✓':'!'} {alert.m}</div>}
+        {authTab==='signup'&&(
+          <div className="fg">
+            <label className="lbl">Full name</label>
+            <input className="inp" placeholder="e.g. Priya Sharma" value={form.name}
+              onChange={e=>setForm(f=>({...f,name:e.target.value}))}/>
+          </div>
+        )}
+        <div className="fg">
+          <label className="lbl">Mobile number</label>
+          <input className="inp" placeholder="10-digit mobile" type="tel" maxLength={10}
+            value={form.contact}
+            onChange={e=>setForm(f=>({...f,contact:e.target.value.replace(/\D/g,'').slice(0,10)}))}/>
+        </div>
+        <div className="fg">
+          <label className="lbl">OTP</label>
+          <div className="otp-row">
+            <input className="otp-inp" placeholder="· · · ·" maxLength={4}
+              value={form.otp}
+              onChange={e=>setForm(f=>({...f,otp:e.target.value.replace(/\D/g,'')}))}/>
+            <button className="btn-otp" onClick={sendOtp} disabled={otpTimer>0}>
+              {otpTimer>0?`${otpTimer}s`:otpSent?'Resend':'Send OTP'}
+            </button>
+          </div>
+        </div>
+        <button className="btn-primary" onClick={doAuth}>
+          {authTab==='signup'?'Create account →':'Sign in →'}
+        </button>
+      </div>
+    </div>
+  );
+
+  if(screen==='tracking') return <TrackScreen order={order} onReview={()=>setScreen('feedback')}/>;
+  if(screen==='feedback') return <FeedbackScreen order={order} onDone={()=>setScreen('booking')}/>;
+
+  return (
+    <div>
+      {showPeso && service==='fuel' && <PesoModal onConfirm={confirmGate} onCancel={()=>setShowPeso(false)}/>}
+      {showPeso && service==='ev'   && <EvGateModal onConfirm={()=>confirmGate()} onCancel={()=>setShowPeso(false)}/>}
+
+      <div className="topbar">
+        <div className="topbar-brand">
+          <div className="logo-badge" style={{width:30,height:30,borderRadius:8}}>
+            <svg width="16" height="16" viewBox="0 0 20 20" fill="none">
+              <path d="M10 2C7 2 4 5 4 8.5c0 4.5 6 9.5 6 9.5s6-5 6-9.5C16 5 13 2 10 2zm0 9a2.5 2.5 0 110-5 2.5 2.5 0 010 5z" fill="#080C18"/>
+            </svg>
+          </div>
+          <span className="topbar-wordmark">E-Fuel{service==='ev'?' / Charge':''}</span>
+        </div>
+        <div className="user-pill">
+          <div className="user-av">{(user?.name||'U')[0].toUpperCase()}</div>
+          <span className="user-nm">{user?.name?.split(' ')[0]}</span>
+        </div>
+      </div>
+
+      <div className="map-wrap">
+        <MapCanvas located={!!loc&&!locating}/>
+        <div className="map-overlay">
+          <div className="map-overlay-icon">
+            <svg width="15" height="15" viewBox="0 0 20 20" fill="none">
+              <path d="M10 2C7 2 4 5 4 8.5c0 4.5 6 9.5 6 9.5s6-5 6-9.5C16 5 13 2 10 2zm0 9a2.5 2.5 0 110-5 2.5 2.5 0 010 5z" fill="#F5A623"/>
+            </svg>
+          </div>
+          <div style={{flex:1,minWidth:0}}>
+            <div className="loc-lbl">Your location</div>
+            <div className="loc-val">{loc?.addr||'Park Street, Kolkata'}</div>
+            {loc&&<div className="loc-coords">{loc.lat}°N  {loc.lng}°E</div>}
+          </div>
+        </div>
+      </div>
+
+      <div className="panel">
+        <div className="svc-toggle">
+          <button className={`svc-btn fuel ${service==='fuel'?'on fuel':''}`} onClick={()=>setService('fuel')}>⛽ Fuel delivery</button>
+          <button className={`svc-btn ev ${service==='ev'?'on ev':''}`} onClick={()=>setService('ev')}>🔌 EV charging</button>
+        </div>
+
+        {service==='fuel' ? (<>
+        <div className="sec-head">Fuel type</div>
+        <div className="fuel-row">
+          {[
+            {id:'petrol', icon:'🟡', label:'Petrol', color:'#F5C842'},
+            {id:'diesel', icon:'🔵', label:'Diesel', color:'#5BA3FF'},
+          ].map(f=>(
+            <div key={f.id} className={`fuel-card ${fuel===f.id?'on':''}`} onClick={()=>setFuel(f.id)}>
+              <div className="fuel-badge" style={{background:f.color+'22'}}>
+                <span style={{fontSize:20}}>{f.icon}</span>
+              </div>
+              <div className="fuel-name">{f.label}</div>
+              <div className="fuel-price">₹{PRICES[f.id]}/L</div>
+              <div className="fuel-tick">
+                <svg width="10" height="8" viewBox="0 0 10 8" fill="none">
+                  <path d="M1 4l3 3 5-6" stroke="#080C18" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
+                </svg>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        <div className="sec-head">Quantity</div>
+        <div className="qty-wrap">
+          <button className="qty-btn" onClick={()=>setQty(q=>Math.max(1,q-1))}>−</button>
+          <div className="qty-val">{qty}<span className="qty-unit">L</span></div>
+          <button className="qty-btn" onClick={()=>setQty(q=>Math.min(50,q+1))}>+</button>
+        </div>
+        <div className="qty-presets">
+          {[3,5,10,15,20].map(n=>(
+            <div key={n} className="qty-pre" onClick={()=>setQty(n)}>{n}L</div>
+          ))}
+        </div>
+
+        <div className="sec-head">Nearby partner pumps</div>
+        {nearbyPumps.map(p=>(
+          <div key={p.id} className={`pump-card ${pump===p.id?'on':''}`} onClick={()=>setPump(p.id)}>
+            <div className="pump-ico"><span style={{fontSize:18}}>⛽</span></div>
+            <div style={{flex:1,minWidth:0}}>
+              <div className="pump-name">{p.name}</div>
+              <div className="pump-addr">{p.addr}</div>
+              <div className="pump-meta">{p.dist} km away · ~{p.eta} · ★ {p.rating}</div>
+            </div>
+            <div className="pump-sel">
+              {pump===p.id&&<svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4l3 3 5-6" stroke="#080C18" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/></svg>}
+            </div>
+          </div>
+        ))}
+        </>) : (<>
+        <div className="sec-head">Your EV model</div>
+        <div className="ev-model-grid">
+          {EV_MODELS.map(m=>(
+            <div key={m.id} className={`ev-model-card ${evModel===m.id?'on':''}`} onClick={()=>setEvModel(m.id)}>
+              <div className="ev-model-nm">{m.label}</div>
+              <div className="ev-model-port">Port: {m.port}</div>
+            </div>
+          ))}
+        </div>
+
+        <div className="sec-head">Charge required</div>
+        <div className="qty-wrap">
+          <button className="qty-btn" onClick={()=>setKwh(q=>Math.max(5,q-5))}>−</button>
+          <div className="qty-val">{kwh}<span className="qty-unit">kWh</span></div>
+          <button className="qty-btn" onClick={()=>setKwh(q=>Math.min(80,q+5))}>+</button>
+        </div>
+        <div className="qty-presets">
+          {[10,20,30,40,50].map(n=>(
+            <div key={n} className="qty-pre" onClick={()=>setKwh(n)}>{n}kWh</div>
+          ))}
+        </div>
+
+        <div className="sec-head">Nearby charging vans</div>
+        {nearbyVans.map(v=>(
+          <div key={v.id} className={`pump-card van-card ${van===v.id?'on':''}`} onClick={()=>setVan(v.id)}>
+            <div className="pump-ico"><span style={{fontSize:18}}>🔌</span></div>
+            <div style={{flex:1,minWidth:0}}>
+              <div className="pump-name">{v.name}</div>
+              <div className="pump-addr">{v.addr}</div>
+              <div className="pump-meta ev">{v.dist} km away · ~{v.eta} · ★ {v.rating}</div>
+            </div>
+            <div className="pump-sel">
+              {van===v.id&&<svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4l3 3 5-6" stroke="#080C18" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/></svg>}
+            </div>
+          </div>
+        ))}
+        </>)}
+
+        <div className="sec-head">Your vehicle</div>
+        <div className="veh-grid">
+          {VEHICLES.map(v=>(
+            <div key={v.id} className={`veh-btn ${vehType===v.id?'on':''}`} onClick={()=>setVehType(v.id)}>
+              <span className="veh-ico">{v.icon}</span>
+              <span className="veh-lbl">{v.label}</span>
+            </div>
+          ))}
+        </div>
+        <div className="veh-fields">
+          <input className="inp" placeholder="Colour (e.g. Silver)" value={vehClr} onChange={e=>setVehClr(e.target.value)}/>
+          <input className="inp" placeholder="Reg. no. (e.g. DL4C…)" value={vehReg} onChange={e=>setVehReg(e.target.value)}/>
+        </div>
+
+        <div className="sec-head">Price breakdown</div>
+        <div className="price-card">
+          <div className="price-row">
+            <span className="price-lbl">{service==='ev' ? <>Energy ({kwh} kWh × ₹{PRICE_PER_KWH})</> : <>Fuel ({qty}L × ₹{PRICES[fuel]})</>}</span>
+            <span className="price-val">₹{fuelCost.toFixed(2)}</span>
+          </div>
+          <div className="price-row">
+            <span className="price-lbl">Delivery ({selProvider?.dist ?? '—'} km)</span>
+            <span className="price-val">₹{delFee.toFixed(2)}</span>
+          </div>
+          <div className="price-div"/>
+          <div className="price-row">
+            <span className="price-total-lbl">Total payable</span>
+            <span className="price-total-val">₹{total.toFixed(2)}</span>
+          </div>
+        </div>
+
+        <button className="btn-primary" onClick={()=>setShowPeso(true)} disabled={!selProvider}>
+          Pay ₹{total.toFixed(2)} via UPI
+        </button>
+        <div className="spacer-40"/>
+      </div>
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
+</script>
+</body>
+</html>
