@@ -18,9 +18,13 @@ import {
   Code2,
   Shield,
   Cloud,
+  Layers,
+  Cpu,
+  CheckCircle2,
 } from "lucide-react";
 import TechMarquee from "@/components/Marquee";
 import SpotlightCard from "@/components/SpotlightCard";
+import TerminalModal from "@/components/TerminalModal";
 
 function GithubIcon({ className = "w-4 h-4" }: { className?: string }) {
   return (
@@ -46,6 +50,7 @@ export default function Home() {
   const [time, setTime] = useState<string>("");
   const [copied, setCopied] = useState(false);
   const [cmdOpen, setCmdOpen] = useState(false);
+  const [terminalOpen, setTerminalOpen] = useState(false);
   const [searchFilter, setSearchFilter] = useState("");
 
   useEffect(() => {
@@ -74,7 +79,14 @@ export default function Home() {
         e.preventDefault();
         setCmdOpen((prev) => !prev);
       }
-      if (e.key === "Escape") setCmdOpen(false);
+      if (e.key === "`" && !["INPUT", "TEXTAREA"].includes((e.target as HTMLElement).tagName)) {
+        e.preventDefault();
+        setTerminalOpen((prev) => !prev);
+      }
+      if (e.key === "Escape") {
+        setCmdOpen(false);
+        setTerminalOpen(false);
+      }
     };
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
@@ -92,7 +104,7 @@ export default function Home() {
       tagline:
         "High-reliability backend system with Azure Functions, handling transactional integrity, secure tokens, and low-latency REST endpoints.",
       stack: ["Java", "Spring Boot", "Azure Cloud", "REST APIs", "Maven"],
-      metrics: "Sub-100ms processing • Zero data loss",
+      metrics: "Sub-100ms • Zero data loss",
       link: "https://github.com/SHAN-DE101",
     },
     {
@@ -100,7 +112,7 @@ export default function Home() {
       tagline:
         "Engineered transactional services with NoSQL persistence layer, automated Postman validation suites, and rigorous data consistency models.",
       stack: ["Spring Boot", "NoSQL", "Postman", "REST APIs", "Git"],
-      metrics: "Automated test coverage • Scalable persistence",
+      metrics: "Automated test coverage",
       link: "https://github.com/SHAN-DE101",
     },
     {
@@ -108,7 +120,7 @@ export default function Home() {
       tagline:
         "Computer vision image and live video classification pipeline utilizing AdaBoost algorithm and HAAR Cascade models for ultra-fast inference.",
       stack: ["Python", "OpenCV", "AdaBoost", "HAAR Cascades"],
-      metrics: "Live video stream processing • High precision",
+      metrics: "Live video stream processing",
       link: "https://github.com/SHAN-DE101",
     },
   ];
@@ -132,6 +144,7 @@ export default function Home() {
   ];
 
   const commandItems = [
+    { label: "Launch Interactive Terminal (`~`)", action: () => { setCmdOpen(false); setTerminalOpen(true); }, icon: Terminal, hint: "` key" },
     { label: "Copy Email Address", action: copyEmail, icon: Mail, hint: "deyshantanu101@gmail.com" },
     { label: "View GitHub Profile", action: () => window.open("https://github.com/SHAN-DE101", "_blank"), icon: GithubIcon, hint: "SHAN-DE101" },
     { label: "View LinkedIn", action: () => window.open("https://www.linkedin.com/in/shantanu-dey-7724571b2/", "_blank"), icon: LinkedinIcon, hint: "Connect" },
@@ -156,6 +169,13 @@ export default function Home() {
           <a href="#experience" className="hover:text-white transition-colors">Experience</a>
           <a href="#projects" className="hover:text-white transition-colors">Projects</a>
           <a href="#skills" className="hover:text-white transition-colors">Skills</a>
+          <button
+            onClick={() => setTerminalOpen(true)}
+            className="flex items-center gap-1 hover:text-emerald-400 transition-colors"
+          >
+            <Terminal className="w-3.5 h-3.5" />
+            <span className="hidden sm:inline">CLI</span>
+          </button>
           <a
             href="https://github.com/SHAN-DE101"
             target="_blank"
@@ -206,6 +226,13 @@ export default function Home() {
               {copied ? <Check className="w-4 h-4 text-emerald-600" /> : <Mail className="w-4 h-4" />}
               <span>{copied ? "Email Copied!" : "deyshantanu101@gmail.com"}</span>
             </button>
+            <button
+              onClick={() => setTerminalOpen(true)}
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-xl border border-zinc-800 bg-zinc-900/60 text-zinc-300 text-sm hover:border-zinc-700 hover:text-white transition-all cursor-pointer"
+            >
+              <Terminal className="w-4 h-4 text-emerald-400" />
+              <span>Interactive CLI</span>
+            </button>
             <a
               href="https://github.com/SHAN-DE101"
               target="_blank"
@@ -224,6 +251,26 @@ export default function Home() {
               <LinkedinIcon className="w-4 h-4" />
               <span>LinkedIn</span>
             </a>
+          </div>
+
+          {/* Impact Stats Ribbon */}
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-4">
+            <div className="p-3.5 rounded-xl border border-zinc-800/80 bg-zinc-950/40">
+              <span className="block text-xl font-bold text-white">1+ Year</span>
+              <span className="text-[11px] text-zinc-500">Persistent Systems SDE</span>
+            </div>
+            <div className="p-3.5 rounded-xl border border-zinc-800/80 bg-zinc-950/40">
+              <span className="block text-xl font-bold text-emerald-400">AZ-900</span>
+              <span className="text-[11px] text-zinc-500">Azure Certified</span>
+            </div>
+            <div className="p-3.5 rounded-xl border border-zinc-800/80 bg-zinc-950/40">
+              <span className="block text-xl font-bold text-white">M.Tech</span>
+              <span className="text-[11px] text-zinc-500">Cyber Security Focus</span>
+            </div>
+            <div className="p-3.5 rounded-xl border border-zinc-800/80 bg-zinc-950/40">
+              <span className="block text-xl font-bold text-indigo-400">REST APIs</span>
+              <span className="text-[11px] text-zinc-500">Postman Automated</span>
+            </div>
           </div>
         </section>
 
@@ -324,7 +371,7 @@ export default function Home() {
           </h2>
           <TechMarquee items={marqueeSkills} />
 
-          {/* Categorized Bento with Spotlight */}
+          {/* Categorized Bento */}
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-2">
             <SpotlightCard className="p-4 space-y-2">
               <div className="flex items-center gap-2 text-zinc-200 text-sm font-semibold">
@@ -404,8 +451,16 @@ export default function Home() {
         </footer>
       </main>
 
-      {/* Floating Keyboard Shortcut Trigger */}
-      <div className="fixed bottom-6 right-6 z-40">
+      {/* Floating Bottom Quick Action Trigger */}
+      <div className="fixed bottom-6 right-6 z-40 flex items-center gap-2">
+        <button
+          onClick={() => setTerminalOpen(true)}
+          className="flex items-center gap-1.5 px-3 py-2 rounded-full border border-zinc-800/90 bg-zinc-950/80 backdrop-blur-xl shadow-2xl text-xs text-zinc-400 hover:border-emerald-500/50 hover:text-emerald-400 transition-all group cursor-pointer"
+          title="Toggle Shell Terminal"
+        >
+          <Terminal className="w-3.5 h-3.5" />
+          <kbd className="px-1.5 py-0.5 rounded bg-zinc-800 text-[10px] font-mono text-zinc-300">`</kbd>
+        </button>
         <button
           onClick={() => setCmdOpen(true)}
           className="flex items-center gap-2 px-3.5 py-2 rounded-full border border-zinc-800/90 bg-zinc-950/80 backdrop-blur-xl shadow-2xl text-xs text-zinc-400 hover:border-zinc-600 hover:text-white transition-all group cursor-pointer"
@@ -413,11 +468,10 @@ export default function Home() {
           <Command className="w-3.5 h-3.5 text-zinc-500 group-hover:text-white transition-colors" />
           <span>Press</span>
           <kbd className="px-1.5 py-0.5 rounded bg-zinc-800 text-[10px] font-mono text-zinc-300">/</kbd>
-          <span>for quick actions</span>
         </button>
       </div>
 
-      {/* Interactive Spotlight Command Modal */}
+      {/* Command Palette Modal */}
       <AnimatePresence>
         {cmdOpen && (
           <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm">
@@ -476,6 +530,9 @@ export default function Home() {
           </div>
         )}
       </AnimatePresence>
+
+      {/* Terminal Shell Modal */}
+      <TerminalModal isOpen={terminalOpen} onClose={() => setTerminalOpen(false)} />
     </div>
   );
 }
