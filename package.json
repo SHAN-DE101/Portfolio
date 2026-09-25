@@ -4,6 +4,6 @@
   "private": true,
   "scripts": {
     "vercel-build": "echo 'Static site deployment ready.'",
-    "build": "echo no build needed"
+    "build": "echo ok"
   }
 }
