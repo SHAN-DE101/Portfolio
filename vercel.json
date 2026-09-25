@@ -1,0 +1,12 @@
+{
+  "version": 2,
+  "builds": [
+    { "src": "index.html", "use": "@vercel/static" },
+    { "src": "resume.pdf", "use": "@vercel/static" },
+    { "src": "assets/**", "use": "@vercel/static" }
+  ],
+  "routes": [
+    { "src": "/resume.pdf", "dest": "/resume.pdf", "headers": { "cache-control": "no-cache, no-store, must-revalidate" } },
+    { "src": "/(.*)", "dest": "/$1" }
+  ]
+}
